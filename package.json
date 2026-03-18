@@ -40,6 +40,8 @@
   },
   "scripts": {
     "---------- DEV": "-------------------------------------------------------",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
     "dev": "tsdown --watch",
     "link": "pnpm build && pnpm link --global",
     "unlink": "pnpm unlink --global",
@@ -88,6 +90,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^17.3.0",
     "lint-staged": "^16.2.7",
+    "oxfmt": "^0.41.0",
     "simple-git-hooks": "^2.13.1",
     "tsdown": "^0.20.3",
     "typescript": "^5.9.3",
@@ -95,13 +98,12 @@
     "vitest": "^4.0.18"
   },
   "lint-staged": {
+    "*": "oxfmt --no-error-on-unmatched-pattern",
     "*.{ts,tsx,js,jsx,mjs,cjs}": [
       "dprint fmt --allow-no-files",
       "eslint --fix"
     ],
-    "*.{json,jsonc,md,yml,yaml,toml}": [
-      "dprint fmt --allow-no-files"
-    ]
+    "*.{json,jsonc,md,yml,yaml,toml}": []
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged --allow-empty"
