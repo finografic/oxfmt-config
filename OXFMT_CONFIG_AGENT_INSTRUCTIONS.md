@@ -24,15 +24,15 @@ Oxfmt supports `.oxfmtrc.ts` / `.oxfmtrc.mts` / `.oxfmtrc.js` / `.oxfmtrc.mjs` c
 
 ```ts
 // .oxfmtrc.ts in consuming project
-import { defineConfig } from 'oxfmt';
-import { base, typescript, markdown } from '@finografic/oxfmt-config';
+import { defineConfig } from "oxfmt";
+import { base, typescript, markdown } from "@finografic/oxfmt-config";
 
 export default defineConfig({
   ...base,
   ...typescript,
   overrides: [
     {
-      files: ['*.md'],
+      files: ["*.md"],
       options: markdown,
     },
   ],
@@ -69,18 +69,18 @@ This is the approach to use. It allows composition and per-language overrides.
 
 ```ts
 export const base = {
-  $schema: './node_modules/oxfmt/configuration_schema.json',
-  printWidth: 100,        // oxfmt default (not Prettier's 80)
+  $schema: "./node_modules/oxfmt/configuration_schema.json",
+  printWidth: 100, // oxfmt default (not Prettier's 80)
   tabWidth: 2,
   useTabs: false,
   semi: true,
   singleQuote: true,
   jsxSingleQuote: false,
-  trailingComma: 'all',
+  trailingComma: "all",
   bracketSpacing: true,
   bracketSameLine: false,
-  arrowParens: 'always',
-  endOfLine: 'lf',
+  arrowParens: "always",
+  endOfLine: "lf",
   singleAttributePerLine: false,
   insertFinalNewline: true,
 } as const;
@@ -100,8 +100,8 @@ export const typescript = {
 
 ```ts
 export const markdown = {
-  proseWrap: 'preserve',  // don't rewrap markdown prose
-  printWidth: 80,          // narrower for readability in docs
+  proseWrap: "preserve", // don't rewrap markdown prose
+  printWidth: 80, // narrower for readability in docs
 } as const;
 ```
 
@@ -110,7 +110,7 @@ export const markdown = {
 ```ts
 export const json = {
   tabWidth: 2,
-  trailingComma: 'none',  // JSON doesn't support trailing commas
+  trailingComma: "none", // JSON doesn't support trailing commas
 } as const;
 ```
 
@@ -118,7 +118,7 @@ export const json = {
 
 ```ts
 export const css = {
-  singleQuote: false,     // CSS convention: double quotes
+  singleQuote: false, // CSS convention: double quotes
 } as const;
 ```
 
@@ -128,7 +128,7 @@ export const css = {
 export const sorting = {
   organizeImports: true,
   sortPackageJson: {
-    sortScripts: false,   // keep manual script ordering (our convention)
+    sortScripts: false, // keep manual script ordering (our convention)
   },
 } as const;
 ```
@@ -182,6 +182,7 @@ If not available, define a local type from the JSON schema at `node_modules/oxfm
 ```
 
 Key decisions:
+
 - `oxfmt` is a `peerDependency` — the consuming project provides it
 - `oxfmt` is also in `devDependencies` for local development/type checking
 - No runtime dependencies — this package only exports plain objects
@@ -189,11 +190,11 @@ Key decisions:
 ## tsdown.config.ts
 
 ```ts
-import { defineConfig } from 'tsdown';
+import { defineConfig } from "tsdown";
 
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: 'esm',
+  entry: ["src/index.ts"],
+  format: "esm",
   dts: true,
   clean: true,
 });
@@ -210,19 +211,19 @@ pnpm add -D oxfmt @finografic/oxfmt-config
 ### Config file (`.oxfmtrc.ts`)
 
 ```ts
-import { defineConfig } from 'oxfmt';
-import { base, sorting, markdown, css } from '@finografic/oxfmt-config';
+import { defineConfig } from "oxfmt";
+import { base, sorting, markdown, css } from "@finografic/oxfmt-config";
 
 export default defineConfig({
   ...base,
   ...sorting,
   overrides: [
     {
-      files: ['*.md', '*.mdx'],
+      files: ["*.md", "*.mdx"],
       options: { ...markdown },
     },
     {
-      files: ['*.css', '*.scss'],
+      files: ["*.css", "*.scss"],
       options: { ...css },
     },
   ],
@@ -234,13 +235,8 @@ export default defineConfig({
 ```json
 {
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,mjs,cjs}": [
-      "oxfmt --no-error-on-unmatched-pattern",
-      "eslint --fix"
-    ],
-    "*.{json,jsonc,md,yml,yaml,toml,css,scss,html}": [
-      "oxfmt --no-error-on-unmatched-pattern"
-    ]
+    "*.{ts,tsx,js,jsx,mjs,cjs}": ["oxfmt --no-error-on-unmatched-pattern", "eslint --fix"],
+    "*.{json,jsonc,md,yml,yaml,toml,css,scss,html}": ["oxfmt --no-error-on-unmatched-pattern"]
   }
 }
 ```

@@ -70,11 +70,14 @@ const config: Linter.Config[] = [
       'stylistic/comma-spacing': ['error', { before: false, after: true }],
       'stylistic/object-property-newline': ['error', { allowAllPropertiesOnSameLine: true }],
       'stylistic/arrow-spacing': ['error', { before: true, after: true }],
-      'stylistic/type-annotation-spacing': ['error', {
-        before: false,
-        after: true,
-        overrides: { arrow: { before: true, after: true } },
-      }],
+      'stylistic/type-annotation-spacing': [
+        'error',
+        {
+          before: false,
+          after: true,
+          overrides: { arrow: { before: true, after: true } },
+        },
+      ],
 
       // Import sorting
       'simple-import-sort/imports': [
@@ -103,12 +106,7 @@ const config: Linter.Config[] = [
 
   {
     files: ['**/*.md'],
-    ignores: [
-      'node_modules/**',
-      'dist/**',
-      '.cursor/**',
-      '.github/instructions/**',
-    ],
+    ignores: ['node_modules/**', 'dist/**', '.claude/**', '.cursor/**', '.github/instructions/**'],
     languageOptions: {
       parser: markdownlintParser,
     },
