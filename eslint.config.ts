@@ -6,11 +6,19 @@
  */
 import js from '@eslint/js';
 import type { Linter } from 'eslint';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 const config: Linter.Config[] = [
   {
-    ignores: ['**/node_modules/**', '**/dist/**', 'internal/**'],
+    ignores: [
+      '**/node_modules/**',
+      '**/dist/**',
+      'internal/**',
+      '**/.cursor/**',
+      '**/*.min.*',
+      '**/*.map',
+    ],
   },
 
   js.configs.recommended,
@@ -21,6 +29,7 @@ const config: Linter.Config[] = [
       ecmaVersion: 'latest',
       sourceType: 'module',
       parser: tseslint.parser,
+      globals: globals.node,
     },
     plugins: {
       '@typescript-eslint': tseslint.plugin,
