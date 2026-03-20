@@ -112,5 +112,10 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
   "packageManager": "pnpm@10.8.0"
 }
