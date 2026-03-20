@@ -2,7 +2,7 @@ import type { OxfmtConfig } from 'oxfmt';
 
 export const base = {
   $schema: './node_modules/oxfmt/configuration_schema.json',
-  printWidth: 110,
+  printWidth: 120,
   tabWidth: 2,
   useTabs: false,
   semi: true,
