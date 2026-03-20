@@ -5,21 +5,20 @@
  * No stylistic rules, no import sorting (oxfmt does both).
  */
 import js from '@eslint/js';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
-import type { Linter } from 'eslint';
 
-const config: Linter.Config[] = [
-  {
-    ignores: [
-      '**/node_modules/**',
-      '**/dist/**',
-      'internal/**',
-      '**/.cursor/**',
-      '**/*.min.*',
-      '**/*.map',
-    ],
-  },
+export default defineConfig([
+  globalIgnores([
+    '**/node_modules/**',
+    '**/dist/**',
+    'internal/**',
+    '**/.claude/**',
+    '**/.cursor/**',
+    '**/*.min.*',
+    '**/*.map',
+  ]),
 
   js.configs.recommended,
 
@@ -50,6 +49,4 @@ const config: Linter.Config[] = [
       ],
     },
   },
-];
-
-export default config;
+]);

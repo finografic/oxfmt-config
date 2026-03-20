@@ -15,7 +15,6 @@ export const base = {
   endOfLine: 'lf',
   singleAttributePerLine: false,
   insertFinalNewline: true,
-  //
   ignorePatterns: [],
   sortImports: {},
   sortPackageJson: {
