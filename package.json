@@ -39,11 +39,10 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "---------- DEV": "-------------------------------------------------------",
+    "---------- DEV_AND_BUILD": "-------------------------------------------------------",
     "dev": "tsdown --watch",
     "link": "pnpm build && pnpm link --global",
     "unlink": "pnpm unlink --global",
-    "·········· BUILD": "·····················································",
     "build": "tsdown",
     "·········· TESTING": "···················································",
     "test": "vitest",
@@ -91,6 +90,7 @@
     "globals": "^17.3.0",
     "lint-staged": "^16.2.7",
     "oxfmt": "^0.41.0",
+    "oxlint-tsgolint": "^0.17.1",
     "simple-git-hooks": "^2.13.1",
     "tsdown": "^0.20.3",
     "tsx": "^4.21.0",
@@ -101,17 +101,22 @@
   "peerDependencies": {
     "oxfmt": ">=0.41.0"
   },
-  "simple-git-hooks": {
-    "pre-commit": "npx lint-staged --allow-empty"
-  },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,mjs,cjs}": [],
-    "*.{json,jsonc,md,yml,yaml,toml,css,scss,html}": []
+    "*.{ts,tsx,js,jsx,mjs,cjs}": [
+      "oxfmt --no-error-on-unmatched-pattern",
+      "eslint --fix"
+    ],
+    "*.{json,jsonc,md,yml,yaml,toml,css,scss,html}": [
+      "oxfmt --no-error-on-unmatched-pattern"
+    ]
   },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
     ]
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged --allow-empty"
   },
   "packageManager": "pnpm@10.8.0"
 }

@@ -1,6 +1,6 @@
-export { base } from './base';
-export { css } from './css';
-export { json } from './json';
-export { markdown } from './markdown';
-export { sorting } from './sorting';
-export { typescript } from './typescript';
+export { base } from './base.config';
+export { css } from './css.config';
+export { json } from './json.config';
+export { markdown } from './markdown.config';
+export { sorting } from './sorting.config';
+export { typescript } from './typescript.config';

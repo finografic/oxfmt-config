@@ -53,7 +53,5 @@ export const sorting = {
   rules: {
     'typescript/no-import-type-side-effects': 'error',
   },
-  sortPackageJson: {
-    sortScripts: false,
-  },
+  sortPackageJson: false,
 } as const satisfies Partial<OxfmtConfig>;

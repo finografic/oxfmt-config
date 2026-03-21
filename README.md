@@ -16,13 +16,7 @@ Create a `oxfmt.config.ts` in your project root:
 
 ```ts
 import { defineConfig } from 'oxfmt';
-import {
-  base,
-  sorting,
-  markdown,
-  css,
-  ignores,
-} from '@finografic/oxfmt-config';
+import { base, sorting, markdown, css, ignores } from '@finografic/oxfmt-config';
 
 export default defineConfig({
   ...ignores,
@@ -61,13 +55,8 @@ Presets live under `src/config/formatting/` (`base`, `typescript`, `json`, `mark
 ```json
 {
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,mjs,cjs}": [
-      "oxfmt --no-error-on-unmatched-pattern",
-      "eslint --fix"
-    ],
-    "*.{json,jsonc,md,yml,yaml,toml,css,scss,html}": [
-      "oxfmt --no-error-on-unmatched-pattern"
-    ]
+    "*.{ts,tsx,js,jsx,mjs,cjs}": ["oxfmt --no-error-on-unmatched-pattern", "eslint --fix"],
+    "*.{json,jsonc,md,yml,yaml,toml,css,scss,html}": ["oxfmt --no-error-on-unmatched-pattern"]
   }
 }
 ```

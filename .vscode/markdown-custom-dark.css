@@ -20,7 +20,8 @@
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: "SF Mono", "Fira Code", "JetBrains Mono", "Cascadia Code", monospace;
+  font-family:
+    "SF Mono", "Fira Code", "JetBrains Mono", "Cascadia Code", monospace;
   font-size: 14px;
   line-height: 1.6;
   max-width: 900px;

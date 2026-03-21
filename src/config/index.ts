@@ -1,5 +1,5 @@
-export { base, css, json, markdown, sorting, typescript } from './config/formatting';
-export { ignorePatterns } from './config/ignore-patterns';
+export { base, css, json, markdown, sorting, typescript } from './formatting';
+export { ignorePatterns } from './ignore-patterns';
 
 // Composable sorting group constants
 export {
@@ -12,4 +12,4 @@ export {
   SORTING_GROUP_STYLES,
   SORTING_GROUP_TYPES_CONSTANTS,
   SORTING_GROUP_WORKSPACE,
-} from './config/sorting-groups';
+} from './sorting-groups';

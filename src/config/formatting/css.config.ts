@@ -1,5 +1,6 @@
 import type { OxfmtConfig } from 'oxfmt';
 
 export const css = {
-  singleQuote: false, // CSS convention: double quotes
+  printWidth: 80,
+  singleQuote: false,
 } as const satisfies Partial<OxfmtConfig>;
