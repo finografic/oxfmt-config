@@ -16,21 +16,18 @@ Create a `oxfmt.config.ts` in your project root:
 
 ```ts
 import { defineConfig } from 'oxfmt';
-import { base, sorting, markdown, css, ignores } from '@finografic/oxfmt-config';
+import { base, sorting, markdown, css, ignores, ignorePatterns } from '@finografic/oxfmt-config';
 
 export default defineConfig({
+  $schema: './node_modules/oxfmt/configuration_schema.json',
+  ignorePatterns,
   ...ignores,
   ...base,
   ...sorting,
   overrides: [
-    {
-      files: ['*.md', '*.mdx'],
-      options: { ...markdown },
-    },
-    {
-      files: ['*.css', '*.scss'],
-      options: { ...css },
-    },
+    { files: ['*.json', '*.jsonc'], excludeFiles: [], options: { ...json } },
+    { files: ['*.md', '*.mdx'], excludeFiles: [], options: { ...markdown } },
+    { files: ['*.css', '*.scss'], excludeFiles: [], options: { ...css } },
   ],
 });
 ```
