@@ -25,7 +25,8 @@
   },
   "files": [
     "dist",
-    "internal/schemas"
+    "internal/schemas",
+    "MIGRATION_GUIDE.md"
   ],
   "type": "module",
   "main": "./dist/index.mjs",

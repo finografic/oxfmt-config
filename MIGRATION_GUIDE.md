@@ -2,6 +2,8 @@
 
 How to migrate your `@finografic` (or any) project to `@finografic/oxfmt-config` from dprint or Prettier.
 
+<https://github.com/finografic/oxfmt-config>
+
 ---
 
 ## Migrating from dprint
@@ -91,7 +93,7 @@ If using `simple-git-hooks`, update the pre-commit command:
 }
 ```
 
-**Critical:** After changing the hook config, re-register it:
+**🚨 CRITICAL:** After changing the hook config, re-register it:
 
 ```bash
 npx simple-git-hooks
