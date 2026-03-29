@@ -9,12 +9,14 @@ import {
   json,
   markdown,
   sorting,
+  typescript,
 } from './dist/index.mjs';
 
 export default defineConfig({
   $schema: './node_modules/oxfmt/configuration_schema.json',
   ignorePatterns,
   ...base,
+  ...typescript,
   ...sorting,
   overrides: [
     { files: ['*.json', '*.jsonc'], excludeFiles: [], options: { ...json } },
