@@ -8,7 +8,7 @@
 
 ## JSX Formatting
 
-- Let Prettier control parentheses and multiline formatting; avoid manual tweaks.
+- Let **oxfmt** (project formatter) control parentheses and multiline formatting; avoid manual tweaks.
 
 ## Fixing
 
@@ -20,5 +20,5 @@ npm run lint -- path/to/file.tsx
 
 ## Disabled Rules (intentional)
 
-- `style/jsx-wrap-multilines`, `react/jsx-wrap-multilines` (Prettier governs formatting)
+- `style/jsx-wrap-multilines`, `react/jsx-wrap-multilines` (oxfmt governs formatting)
 - `ts/no-unused-vars` in favor of import cleanup

@@ -8,6 +8,7 @@ Before releasing, ensure:
 
 - ✅ All changes committed and pushed
 - ✅ On `master` branch
+- ✅ Format check passing (`pnpm format.check`)
 - ✅ Tests passing (`pnpm test.run`)
 - ✅ Linting passing (`pnpm lint`)
 - ✅ Type-checking passing (`pnpm typecheck`)
@@ -43,6 +44,7 @@ pnpm release.github.major
 When you run a release command:
 
 1. **Local checks run** (`release.check`)
+   - Format check (`oxfmt --check`)
    - Linting
    - Type checking
    - Tests
@@ -127,6 +129,7 @@ pnpm release.github.patch
 Run the checks manually to see what failed:
 
 ```bash
+pnpm format.check
 pnpm lint.fix
 pnpm typecheck
 pnpm test.run

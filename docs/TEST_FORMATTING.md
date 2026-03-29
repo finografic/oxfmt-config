@@ -4,7 +4,7 @@
 # 1. Build and pack (from oxfmt-config root)
 pnpm build
 pnpm pack
-# → creates finografic-oxfmt-config-0.1.0.tgz
+# → creates finografic-oxfmt-config-<version>.tgz (name matches package.json version)
 
 # 2. Create a temp test project
 mkdir /tmp/test-oxfmt-config && cd /tmp/test-oxfmt-config
@@ -12,7 +12,7 @@ pnpm init
 pnpm add -D oxfmt
 
 # 3. Install your local tarball
-pnpm add -D /path/to/finografic-oxfmt-config-0.1.0.tgz
+pnpm add -D /path/to/finografic-oxfmt-config-<version>.tgz
 
 # 4. Create a consumer config file
 cat > .oxfmtrc.ts << 'EOF'
@@ -20,11 +20,13 @@ import { defineConfig } from 'oxfmt';
 import { base, sorting, markdown, css } from '@finografic/oxfmt-config';
 
 export default defineConfig({
+  $schema: './node_modules/oxfmt/configuration_schema.json',
+  ignorePatterns: [],
   ...base,
   ...sorting,
   overrides: [
-    { files: ['*.md', '*.mdx'], options: { ...markdown } },
-    { files: ['*.css', '*.scss'], options: { ...css } },
+    { files: ['*.md', '*.mdx'], excludeFiles: [], options: { ...markdown } },
+    { files: ['*.css', '*.scss'], excludeFiles: [], options: { ...css } },
   ],
 });
 EOF
@@ -44,14 +46,14 @@ npx oxfmt test.ts --check
 
 npx oxfmt test.ts
 # Should format — check output matches your base preset
-# (singleQuote: true, semi: true, trailingComma: all, etc.)
+# (see src/config/formatting/base.config.ts: printWidth 110, singleQuote, semi, trailingComma, etc.)
 cat test.ts
 
 # 7. Verify TypeScript resolves the types
 cat > check-types.ts << 'EOF'
 import { base, sorting, markdown, css, json, typescript } from '@finografic/oxfmt-config';
-console.log(base.printWidth);      // should be 100
-console.log(markdown.printWidth);  // should be 80
+console.log(base.printWidth);      // should be 110
+console.log(markdown.printWidth);  // should be 110 (markdown preset)
 console.log(css.singleQuote);      // should be false
 EOF
 

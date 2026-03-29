@@ -35,11 +35,13 @@ git commit -m "feat: add new feature"
 **Automatic hooks run:**
 
 1. ✅ **pre-commit hook** triggers
-   - Runs `npx lint-staged`
-   - Lints and fixes **only staged files**
-   - Fast (5-10 seconds)
+   - Runs `npx lint-staged --allow-empty` (ESLint + oxfmt on staged globs)
+   - Runs `oxfmt --no-error-on-unmatched-pattern` on the repo
+   - Fast (roughly seconds to a minute depending on tree size)
 
-2. ✅ **Commit proceeds** if lint passes
+2. ✅ **Commit proceeds** if lint/format pass
+
+After pulling hook changes, run `pnpm install` (runs `prepare` → `simple-git-hooks`) or `npx simple-git-hooks` so `.git/hooks/pre-commit` stays in sync.
 
 **No pre-push hook** - tests run before releases only
 
@@ -57,6 +59,7 @@ pnpm release.github.patch  # or .minor or .major
 
 ```
 1. release.check runs:
+   ├─ pnpm format.check # oxfmt --check entire codebase
    ├─ pnpm lint.fix      # Lint entire codebase
    ├─ pnpm typecheck     # Type check entire codebase
    └─ pnpm test.run      # Run ALL tests (non-watch mode)
@@ -99,7 +102,7 @@ pnpm release.github.patch  # or .minor or .major
 
     // Releases
     "release.github.patch": "pnpm run release.check && pnpm version patch && git push --follow-tags",
-    "release.check": "pnpm lint.fix && pnpm typecheck && pnpm test.run"
+    "release.check": "pnpm format.check && pnpm lint.fix && pnpm typecheck && pnpm test.run"
   }
 }
 ```
@@ -108,7 +111,7 @@ pnpm release.github.patch  # or .minor or .major
 
 ```javascript
 export default {
-  'pre-commit': 'npx lint-staged',
+  'pre-commit': 'npx lint-staged --allow-empty && oxfmt --no-error-on-unmatched-pattern',
   // No pre-push - tests run in release.check
 };
 ```
@@ -125,17 +128,18 @@ export default {
 ```json
 {
   "lint-staged": {
-    "*.{ts,tsx,js,mjs,cjs}": ["eslint --fix"]
+    "*.{ts,tsx,js,jsx,mjs,cjs}": ["eslint --fix", "oxfmt --no-error-on-unmatched-pattern"],
+    "*.md": ["eslint --fix", "oxfmt --no-error-on-unmatched-pattern"],
+    "*.{json,jsonc,yml,yaml,toml}": ["oxfmt --no-error-on-unmatched-pattern"]
   }
 }
 ```
 
 **Key points:**
 
-- ✅ Uses `eslint` directly (not `pnpm exec eslint`)
-- ✅ Runs on staged files only
-- ✅ Auto-fixes issues
-- ✅ Blocks commit if errors remain
+- ✅ ESLint runs before oxfmt on TS/JS and Markdown
+- ✅ Runs on staged files only (`--allow-empty` avoids failure when no files match)
+- ✅ Auto-fixes when possible; blocks commit if errors remain
 
 ---
 
@@ -171,12 +175,12 @@ The following hooks are created in `.git/hooks/`:
 
 ```bash
 #!/bin/sh
-npx lint-staged
+npx lint-staged --allow-empty && oxfmt --no-error-on-unmatched-pattern
 ```
 
-**Purpose:** Lint and fix staged files before commit
-**Speed:** Fast (only processes changed files)
-**Blocking:** Yes (commit fails if lint fails)
+**Purpose:** Lint and format staged files, then run oxfmt on the working tree  
+**Speed:** Dominated by full-tree oxfmt on large repos  
+**Blocking:** Yes (commit fails if a step fails)
 
 ### No pre-push Hook
 
@@ -195,7 +199,7 @@ npx lint-staged
 **Solution:** Ensure `release.check` uses `test.run`:
 
 ```json
-"release.check": "pnpm lint.fix && pnpm typecheck && pnpm test.run"
+"release.check": "pnpm format.check && pnpm lint.fix && pnpm typecheck && pnpm test.run"
 ```
 
 ### Commits Blocked by Lint
@@ -228,6 +232,7 @@ pnpm test.run       # Verify tests pass
 
 - [ ] All changes committed
 - [ ] On `master` branch
+- [ ] `pnpm format.check` passes
 - [ ] `pnpm lint.fix` passes
 - [ ] `pnpm typecheck` passes
 - [ ] `pnpm test.run` passes

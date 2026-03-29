@@ -44,23 +44,62 @@ export default defineConfig({
 
 > **Note:** Never spread `$schema` inside a preset object — doing so silently resets all formatting to oxfmt defaults. Always set `$schema` directly in `defineConfig()`.
 
-## Sorting Groups
+## Sorting groups
 
 Composable import-sort group constants. Import whichever groups match your project structure and use them in `sortImports.customGroups` and `sortImports.groups`.
 
-| Constant                         | Group name         | Matches                                               |
-| -------------------------------- | ------------------ | ----------------------------------------------------- |
-| `SORTING_GROUP_WORKSPACE`        | `workspace`        | `@finografic/**`, `@workspace/**`                     |
-| `SORTING_GROUP_LIB_UTILS`        | `lib-utils`        | `lib/**`, `utils/**`                                  |
-| `SORTING_GROUP_TYPES_CONSTANTS`  | `types-constants`  | `types/**`, `constants/**`, `config/**`               |
-| `SORTING_GROUP_STYLES`           | `styles`           | `styles/**`, `*.css`, `*.scss`                        |
-| `SORTING_GROUP_REACT`            | `react`            | `react`, `react-dom`, `react/**`, `@react/**`         |
-| `SORTING_GROUP_PAGES_COMPONENTS` | `pages-components` | `pages/**`, `components/**`                           |
-| `SORTING_GROUP_HOOKS_ROUTES`     | `hooks-routes`     | `hooks/**`, `routes/**`, `providers/**`, `queries/**` |
-| `SORTING_GROUP_SERVER_LAYERS`    | `server-layers`    | `routes/**`, `middlewares/**`, `db/**`, `schemas/**`  |
-| `SORTING_GROUP_API`              | `api`              | `openapi/**`, `i18n/**`                               |
+Source files: `src/config/sorting-groups/` (`base.groups.ts`, `client.groups.ts`, `server.groups.ts`, `react.groups.ts`, `presets.ts`).
+
+| Constant                         | Group name         | Matches                                                                       |
+| -------------------------------- | ------------------ | ----------------------------------------------------------------------------- |
+| `SORTING_GROUP_WORKSPACE`        | `workspace`        | `@finografic/**`, `@workspace/**`                                             |
+| `SORTING_GROUP_LIB_UTILS`        | `lib-utils`        | `lib/**`, `utils/**` (with `./` variants)                                     |
+| `SORTING_GROUP_TYPES_CONSTANTS`  | `types-constants`  | `types/**`, `constants/**`, `config/**` (with `./` variants)                  |
+| `SORTING_GROUP_STYLES`           | `styles`           | `styles/**`, `*.css`, `*.scss`, `*.styles`                                    |
+| `SORTING_GROUP_TESTS`            | `tests`            | `__tests__/**`, `*.test.*`, `*.spec.*`, `test-utils/**`                       |
+| `SORTING_GROUP_REACT`            | `react`            | `react`, `react-dom`, `react/**`, `@react/**`                                 |
+| `SORTING_GROUP_PAGES_COMPONENTS` | `pages-components` | `pages/**`, `components/**`                                                   |
+| `SORTING_GROUP_HOOKS`            | `hooks`            | `hooks/**`, `providers/**`, `queries/**`                                      |
+| `SORTING_GROUP_CLIENT_ROUTES`    | `client-routes`    | `routes/**` (client; separate from server routes)                             |
+| `SORTING_GROUP_SERVER_ROUTES`    | `server-routes`    | `routes/**` (server apps)                                                     |
+| `SORTING_GROUP_SERVER_LAYERS`    | `server-layers`    | `middlewares/**`, `db/**`, `schemas/**` (no `routes/**`; use `server-routes`) |
+| `SORTING_GROUP_API`              | `api`              | `openapi/**`, `i18n/**`                                                       |
+
+### Presets
+
+Ready-made `customGroups` arrays live in `src/config/sorting-groups/presets.ts`:
+
+| Export                | Typical use        |
+| --------------------- | ------------------ |
+| `SORT_PRESET_CLIENT`  | React / Vite / SPA |
+| `SORT_PRESET_SERVER`  | Node HTTP APIs     |
+| `SORT_PRESET_CLI`     | CLI tools          |
+| `SORT_PRESET_LIBRARY` | Shared packages    |
+
+Spread them into `sortImports.customGroups` and mirror the same group names in `sortImports.groups` (see client/server examples below).
+
+### Agent instruction paths
+
+`AGENT_DOC_PATHS`, `AGENT_DOC_MARKDOWN_PATHS`, and `agentMarkdown` are defined in `src/config/patterns/agent-docs.patterns.ts` for relaxed markdown formatting on AI instruction files (Copilot, Cursor, `AGENTS.md`, etc.). The root `oxfmt.config.ts` in this repo shows how to combine them with `overrides`.
 
 When spreading `...sorting` and overriding `sortImports`, the explicit key wins — `sorting.rules` and `sorting.sortPackageJson` are still inherited from the spread.
+
+### Migration from `SORTING_GROUP_HOOKS_ROUTES`
+
+If you previously used `SORTING_GROUP_HOOKS_ROUTES` / `'hooks-routes'`, split into hooks and client routes:
+
+```diff
+- import { SORTING_GROUP_HOOKS_ROUTES } from '@finografic/oxfmt-config';
++ import { SORTING_GROUP_HOOKS, SORTING_GROUP_CLIENT_ROUTES } from '@finografic/oxfmt-config';
+```
+
+```diff
+- 'hooks-routes',
++ 'hooks',
++ 'client-routes',
+```
+
+Server configs should list `'server-routes'` before `'server-layers'` when using `SORTING_GROUP_SERVER_ROUTES`.
 
 ## Monorepo Setup
 
@@ -81,10 +120,12 @@ import {
   SORTING_GROUP_REACT,
   SORTING_GROUP_WORKSPACE,
   SORTING_GROUP_PAGES_COMPONENTS,
-  SORTING_GROUP_HOOKS_ROUTES,
+  SORTING_GROUP_HOOKS,
+  SORTING_GROUP_CLIENT_ROUTES,
   SORTING_GROUP_LIB_UTILS,
   SORTING_GROUP_TYPES_CONSTANTS,
   SORTING_GROUP_STYLES,
+  SORTING_GROUP_TESTS,
 } from '@finografic/oxfmt-config';
 
 export default defineConfig({
@@ -98,10 +139,12 @@ export default defineConfig({
       SORTING_GROUP_REACT,
       SORTING_GROUP_WORKSPACE,
       SORTING_GROUP_PAGES_COMPONENTS,
-      SORTING_GROUP_HOOKS_ROUTES,
+      SORTING_GROUP_HOOKS,
+      SORTING_GROUP_CLIENT_ROUTES,
       SORTING_GROUP_LIB_UTILS,
       SORTING_GROUP_TYPES_CONSTANTS,
       SORTING_GROUP_STYLES,
+      SORTING_GROUP_TESTS,
     ],
     groups: [
       'value-builtin',
@@ -111,12 +154,14 @@ export default defineConfig({
       'type-import',
       { newlinesBetween: true },
       'pages-components',
-      'hooks-routes',
+      'hooks',
+      'client-routes',
       'lib-utils',
       'types-constants',
       ['value-internal', 'value-parent', 'value-sibling', 'value-index'],
       { newlinesBetween: true },
       'styles',
+      'tests',
       'unknown',
     ],
   },
@@ -141,10 +186,12 @@ import {
   typescript,
   ignorePatterns,
   SORTING_GROUP_WORKSPACE,
+  SORTING_GROUP_SERVER_ROUTES,
   SORTING_GROUP_SERVER_LAYERS,
   SORTING_GROUP_API,
   SORTING_GROUP_LIB_UTILS,
   SORTING_GROUP_TYPES_CONSTANTS,
+  SORTING_GROUP_TESTS,
 } from '@finografic/oxfmt-config';
 
 export default defineConfig({
@@ -156,10 +203,12 @@ export default defineConfig({
     newlinesBetween: false,
     customGroups: [
       SORTING_GROUP_WORKSPACE,
+      SORTING_GROUP_SERVER_ROUTES,
       SORTING_GROUP_SERVER_LAYERS,
       SORTING_GROUP_API,
       SORTING_GROUP_LIB_UTILS,
       SORTING_GROUP_TYPES_CONSTANTS,
+      SORTING_GROUP_TESTS,
     ],
     groups: [
       'value-builtin',
@@ -167,11 +216,13 @@ export default defineConfig({
       'value-external',
       'type-import',
       { newlinesBetween: true },
+      'server-routes',
       'server-layers',
       'api',
       'lib-utils',
       'types-constants',
       ['value-internal', 'value-parent', 'value-sibling', 'value-index'],
+      'tests',
       'unknown',
     ],
   },
@@ -185,18 +236,30 @@ export default defineConfig({
 
 ## Source layout (this repo)
 
-Presets live under `src/config/formatting/` (`base`, `typescript`, `json`, `markdown`, `css`, `sorting`, etc.). Optional `ignores` glob patterns are in `src/config/ignores.ts`. Composable import-sort groups (`SORTING_GROUP_*`) are in `src/config/sorting-groups/`. The package entry re-exports from `src/index.ts`.
+| Area                           | Path                                                                                     |
+| ------------------------------ | ---------------------------------------------------------------------------------------- |
+| Formatting presets             | `src/config/formatting/` (`base`, `typescript`, `json`, `markdown`, `css`, `sorting`, …) |
+| Ignore globs + agent doc paths | `src/config/patterns/` (`ignore.patterns.ts`, `agent-docs.patterns.ts`, `index.ts`)      |
+| Import-sort groups + presets   | `src/config/sorting-groups/` (`*.groups.ts`, `presets.ts`)                               |
+| Public API                     | `src/index.ts` → `dist/index.mjs`                                                        |
+
+The root `oxfmt.config.ts` imports from `./dist/index.mjs` (not `src/`) so the formatter always sees the built bundle; rebuild with `pnpm build` after editing `src/`.
 
 ## lint-staged
+
+This repo runs **ESLint first, then oxfmt** on code and markdown, and oxfmt-only on JSON/YAML/TOML (see `package.json`):
 
 ```json
 {
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,mjs,cjs}": ["oxfmt --no-error-on-unmatched-pattern", "eslint --fix"],
-    "*.{json,jsonc,md,yml,yaml,toml,css,scss,html}": ["oxfmt --no-error-on-unmatched-pattern"]
+    "*.{ts,tsx,js,jsx,mjs,cjs}": ["eslint --fix", "oxfmt --no-error-on-unmatched-pattern"],
+    "*.md": ["eslint --fix", "oxfmt --no-error-on-unmatched-pattern"],
+    "*.{json,jsonc,yml,yaml,toml}": ["oxfmt --no-error-on-unmatched-pattern"]
   }
 }
 ```
+
+The **pre-commit** hook runs `lint-staged` and then `oxfmt` on the whole tree (`oxfmt --no-error-on-unmatched-pattern`). After cloning or changing hook config, run `pnpm install` (or `npx simple-git-hooks`) so hooks stay registered.
 
 ## Editor Setup
 

@@ -10,7 +10,7 @@ Core Guidelines
 
 - Use TypeScript with `strict` mode; prioritize type safety.
 - Prefer named parameters and guard clauses.
-- Keep imports sorted; let Prettier handle JSX formatting.
+- Keep imports sorted; use **oxfmt** (with shared config from `@finografic/oxfmt-config` where applicable) for formatting.
 - Document significant changes; add date tags in docs.
 
 Rule Files

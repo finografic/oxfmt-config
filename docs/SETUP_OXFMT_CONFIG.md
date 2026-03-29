@@ -6,17 +6,14 @@ A guide to configuring oxfmt in this repo, including a critical gotcha that caus
 
 ## How the config is structured
 
-Formatting options are split into named presets under `src/config/formatting/`:
+| Export / area                                              | Source                                       | Purpose                                            |
+| ---------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------- |
+| `base`, `typescript`, `json`, `markdown`, `css`, `sorting` | `src/config/formatting/`                     | Named formatting and sort presets                  |
+| `ignorePatterns`                                           | `src/config/patterns/ignore.patterns.ts`     | Globs to exclude from formatting                   |
+| `AGENT_DOC_*`, `agentMarkdown`                             | `src/config/patterns/agent-docs.patterns.ts` | Agent instruction paths + relaxed markdown options |
+| `SORTING_GROUP_*`, `SORT_PRESET_*`                         | `src/config/sorting-groups/`                 | Composable import-sort groups                      |
 
-| Export           | Purpose                                    |
-| ---------------- | ------------------------------------------ |
-| `base`           | Core formatting (semi, quotes, width, etc) |
-| `sorting`        | Import sorting groups and order            |
-| `markdown`       | Prose-wrap and print-width overrides       |
-| `css`            | CSS/SCSS quote override                    |
-| `ignorePatterns` | Glob patterns to exclude from formatting   |
-
-These are compiled to `dist/index.mjs` via `pnpm build` (tsdown). The root `oxfmt.config.ts` imports from the compiled dist — not from source.
+These are compiled to `dist/index.mjs` via `pnpm build` (tsdown). The root `oxfmt.config.ts` imports from the compiled dist — not from source — so TypeScript path aliases in `src/` do not affect the formatter binary.
 
 ---
 
@@ -24,18 +21,19 @@ These are compiled to `dist/index.mjs` via `pnpm build` (tsdown). The root `oxfm
 
 ### What goes wrong
 
-The `base` object in `src/config/formatting/base.ts` includes a `$schema` property:
+`$schema` is a JSON meta-property for editor validation hints. It is **not** an oxfmt formatting option. If an object you spread into `defineConfig()` includes `$schema`, oxfmt may treat it as a directive to re-initialize from the referenced schema file — resetting options to schema defaults.
+
+The shipped `base` preset in this repo (`src/config/formatting/base.config.ts`) **omits** `$schema` so `...base` is safe. Set `$schema` only on the top-level `defineConfig({ ... })` argument (as in the root `oxfmt.config.ts`).
+
+Example of what **not** to put inside a spread preset:
 
 ```ts
-export const base = {
+export const badBase = {
   $schema: './node_modules/oxfmt/configuration_schema.json',
   semi: false,
-  singleQuote: false,
   // ...
 };
 ```
-
-`$schema` is a JSON meta-property used by editors for schema validation hints. It is **not** an oxfmt formatting option. When you spread `base` directly into `defineConfig()`, oxfmt sees `$schema` in the config object and treats it as a directive to re-initialize from the referenced schema file — which resets everything back to schema defaults (`semi: true`, `singleQuote: false`, etc.).
 
 ### Symptom
 
@@ -43,15 +41,15 @@ Files format with oxfmt defaults instead of your configured values — even thou
 
 ### The fix
 
-**IMPORTANT:** `$schema` must be set inside of `defineConfig({...})`
+**IMPORTANT:** Keep `$schema` on the object passed to `defineConfig`, not inside preset spreads.
 
 ```ts
 import { defineConfig } from 'oxfmt';
-import { base, sorting, markdown, json, css } from './dist/index.mjs';
+import { base, sorting, markdown, json, css, ignorePatterns } from './dist/index.mjs';
 
 export default defineConfig({
   $schema: './node_modules/oxfmt/configuration_schema.json',
-  ignorePatterns: [],
+  ignorePatterns,
   ...base,
   ...sorting,
   overrides: [
@@ -62,11 +60,9 @@ export default defineConfig({
 } satisfies ReturnType<typeof defineConfig>);
 ```
 
-The `$schema` prefix `_` silences the unused-variable lint rule.
-
 ### Why the other spreads (`sorting`, `markdown`, `css`) are unaffected
 
-None of those objects include a `$schema` property. Only `base` does, because it was designed to be used as a standalone JSON-schema-aware config object as well as a spread source — and those two use cases conflict.
+None of those objects include `$schema`.
 
 ---
 
@@ -110,13 +106,13 @@ npx oxfmt --check src/types/sorting.types.ts
 The final merged config object that oxfmt receives looks like this (from `dist/index.mjs`):
 
 ```ts
-// from base (minus $schema):
+// from base (see base.config.ts for current values):
 {
-  printWidth: 120,
+  printWidth: 110,
   tabWidth: 2,
   useTabs: false,
-  semi: false,
-  singleQuote: false,
+  semi: true,
+  singleQuote: true,
   jsxSingleQuote: false,
   trailingComma: 'all',
   bracketSpacing: true,
@@ -136,3 +132,9 @@ The final merged config object that oxfmt receives looks like this (from `dist/i
 ```
 
 Per-file overrides are layered on top via the `overrides` array.
+
+---
+
+## Agent instruction markdown
+
+This repo exports `AGENT_DOC_MARKDOWN_PATHS` and `agentMarkdown` from `src/config/patterns/agent-docs.patterns.ts`. The root `oxfmt.config.ts` applies the standard `markdown` preset to most `*.md` / `*.mdx` files, **excludes** those paths, and applies `agentMarkdown` only to agent instruction files so Copilot/Cursor/Claude paths stay formatted consistently without fighting stricter prose rules on normal docs.

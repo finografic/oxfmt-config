@@ -30,22 +30,14 @@ Rules are canonical in `.github/instructions/` and shared across Claude Code, Cu
 
 Project-specific rules live in `.github/instructions/project/`. Add `*.instructions.md` files there and link them here.
 
-<!-- NOTE: CLI projects (genx:type:cli keyword in package.json) only -->
-
-- Generated README sections are managed by `pnpm docs.usage` — never edit content between `<!-- GENERATED:*:START/END -->` markers by hand.
-
-- This is a **standalone installable package** (`@finografic/design-system`), not a monorepo workspace.
-- Published to GitHub Packages (`https://npm.pkg.github.com`).
+- This repo is **`@finografic/oxfmt-config`**: shareable [oxfmt](https://oxc.rs/docs/guide/usage/formatter) presets, import-sort groups, ignore patterns, and agent-doc path helpers for the finografic ecosystem.
+- **Standalone package** (not a monorepo workspace root). Published to GitHub Packages (`https://npm.pkg.github.com`).
+- **Source layout:** formatting presets in `src/config/formatting/`; ignore globs and agent instruction paths in `src/config/patterns/`; `SORTING_GROUP_*` and `SORT_PRESET_*` in `src/config/sorting-groups/`. Public API: `src/index.ts` → `dist/index.mjs`.
+- Root **`oxfmt.config.ts`** imports from `./dist/index.mjs` (rebuild with `pnpm build` after changing `src/`).
+- **Hooks:** `simple-git-hooks` pre-commit runs `lint-staged` then `oxfmt`; `lint-staged` runs ESLint before oxfmt on code and Markdown (see `package.json`).
 - Do not include `Co-Authored-By` lines in commit messages.
-- Do not reference `@workspace/*` — all imports and deps must use published package names.
-- The `panda.preset` entry must always build with `platform: 'node'` in tsdown.
-- Never add `watch: true` to `panda.config.ts` — it causes `panda codegen` to hang.
 
 ## Learned User Preferences
 
-- Follow existing recipe patterns for naming, structure, and variant conventions
-- Apply recipes inside design-system components; client uses `<Button variant="..." />` without calling the recipe
-- Use cva for single-element components (e.g. Button); use sva for multi-slot components (Checkbox, Card, Dialog)
-- Use @stylistic/stylelint-plugin for Stylelint 17; stylelint-stylistic is deprecated and incompatible
-- Ignore .cursor/chats and .cursor/hooks; commit .cursor/mcp.json
-- Use Panda MCP for design-system questions (breakpoints, tokens, recipes) when relevant without explicit user ask
+- When documenting sorting, use current group names (`hooks`, `client-routes`, `server-routes`, `tests`, …) — not the removed `hooks-routes` / `SORTING_GROUP_HOOKS_ROUTES`.
+- Prefer linking to `docs/SETUP_OXFMT_CONFIG.md` and `docs/OXFMT_SORT_GROUPS.md` for formatter and import-sort details.
