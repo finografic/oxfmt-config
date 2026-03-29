@@ -1,17 +1,22 @@
 import type { CustomGroupItemConfig } from 'src/types/sorting.types';
 
+// ── Server / backend groups ───────────────────────────
+
 export const SORTING_GROUP_SERVER_LAYERS = {
   groupName: 'server-layers',
   elementNamePattern: [
-    'routes/**',
     'middlewares/**',
     'db/**',
     'schemas/**',
-    './routes/**',
     './middlewares/**',
     './db/**',
     './schemas/**',
   ],
+} as const satisfies CustomGroupItemConfig;
+
+export const SORTING_GROUP_SERVER_ROUTES = {
+  groupName: 'server-routes',
+  elementNamePattern: ['routes/**', './routes/**'],
 } as const satisfies CustomGroupItemConfig;
 
 export const SORTING_GROUP_API = {

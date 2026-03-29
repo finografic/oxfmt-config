@@ -1,20 +1,25 @@
 import type { CustomGroupItemConfig } from 'src/types/sorting.types';
 
+// ── Client / frontend groups ──────────────────────────
+
 export const SORTING_GROUP_PAGES_COMPONENTS = {
   groupName: 'pages-components',
   elementNamePattern: ['pages/**', 'components/**', './pages/**', './components/**'],
 } as const satisfies CustomGroupItemConfig;
 
-export const SORTING_GROUP_HOOKS_ROUTES = {
-  groupName: 'hooks-routes',
+export const SORTING_GROUP_HOOKS = {
+  groupName: 'hooks',
   elementNamePattern: [
     'hooks/**',
-    'routes/**',
     'providers/**',
     'queries/**',
     './hooks/**',
-    './routes/**',
     './providers/**',
     './queries/**',
   ],
+} as const satisfies CustomGroupItemConfig;
+
+export const SORTING_GROUP_CLIENT_ROUTES = {
+  groupName: 'client-routes',
+  elementNamePattern: ['routes/**', './routes/**'],
 } as const satisfies CustomGroupItemConfig;

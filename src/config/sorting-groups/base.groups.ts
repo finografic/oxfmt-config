@@ -1,5 +1,7 @@
 import type { CustomGroupItemConfig } from 'src/types/sorting.types';
 
+// ── Universal groups (all project types) ──────────────
+
 export const SORTING_GROUP_WORKSPACE = {
   groupName: 'workspace',
   elementNamePattern: ['@finografic/**', '@workspace/**'],
@@ -25,4 +27,9 @@ export const SORTING_GROUP_TYPES_CONSTANTS = {
 export const SORTING_GROUP_STYLES = {
   groupName: 'styles',
   elementNamePattern: ['styles/**', './styles/**', '*.css', '*.scss', '*.styles'],
+} as const satisfies CustomGroupItemConfig;
+
+export const SORTING_GROUP_TESTS = {
+  groupName: 'tests',
+  elementNamePattern: ['__tests__/**', '*.test.*', '*.spec.*', 'test-utils/**', './test-utils/**'],
 } as const satisfies CustomGroupItemConfig;

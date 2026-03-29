@@ -1,6 +1,15 @@
 import { defineConfig } from 'oxfmt';
 
-import { base, sorting, markdown, json, css, ignorePatterns } from './dist/index.mjs';
+import {
+  agentMarkdown,
+  AGENT_DOC_MARKDOWN_PATHS,
+  base,
+  css,
+  ignorePatterns,
+  json,
+  markdown,
+  sorting,
+} from './dist/index.mjs';
 
 export default defineConfig({
   $schema: './node_modules/oxfmt/configuration_schema.json',
@@ -9,7 +18,16 @@ export default defineConfig({
   ...sorting,
   overrides: [
     { files: ['*.json', '*.jsonc'], excludeFiles: [], options: { ...json } },
-    { files: ['*.md', '*.mdx'], excludeFiles: [], options: { ...markdown } },
+    {
+      files: ['*.md', '*.mdx'],
+      excludeFiles: [...AGENT_DOC_MARKDOWN_PATHS],
+      options: { ...markdown },
+    },
+    {
+      files: [...AGENT_DOC_MARKDOWN_PATHS],
+      excludeFiles: [],
+      options: { ...agentMarkdown },
+    },
     { files: ['*.css', '*.scss'], excludeFiles: [], options: { ...css } },
   ],
 } satisfies ReturnType<typeof defineConfig>);

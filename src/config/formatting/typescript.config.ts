@@ -1,5 +1,14 @@
 import type { OxfmtConfig } from 'oxfmt';
 
-// Placeholder — TS-specific overrides go here when needed.
-// Having a separate preset allows adding TS-specific rules without touching base.
+/**
+ * TypeScript/TSX-specific formatting overrides.
+ *
+ * Empty for now — exists as a separate preset so TS-specific options
+ * can be added without touching `base`. Candidates to evaluate:
+ *   - `jsdoc` (JSDoc comment formatting / normalization)
+ *   - `objectWrap` ("preserve" vs "collapse" for TS object types)
+ *   - `singleAttributePerLine` (for TSX)
+ *
+ * @see https://oxc.rs/docs/guide/usage/formatter/config-file-reference.html
+ */
 export const typescript = {} as const satisfies Partial<OxfmtConfig>;
