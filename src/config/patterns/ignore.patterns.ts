@@ -3,6 +3,8 @@ import type { OxfmtConfig } from 'oxfmt';
 export const ignorePatterns = [
   '**/node_modules/**',
   '**/dist/**',
+  '**/build/**',
+  '**/bin/**',
   '**/coverage/**',
   '**/.turbo/**',
   '**/*.min.*',
