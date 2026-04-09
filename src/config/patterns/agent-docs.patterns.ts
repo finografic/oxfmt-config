@@ -67,7 +67,7 @@ export const AGENT_DOC_MARKDOWN_PATHS = AGENT_DOC_PATHS.filter(
  * structure rules, agent docs will already have a separate, relaxed config.
  */
 export const agentMarkdown = {
+  embeddedLanguageFormatting: 'off',
   proseWrap: 'preserve',
   printWidth: 180,
-  insertFinalNewline: true,
 } as const satisfies Partial<OxfmtConfig>;
