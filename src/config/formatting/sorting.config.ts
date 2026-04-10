@@ -48,13 +48,15 @@ export const sorting = {
       { newlinesBetween: true },
 
       'lib-utils',
+
+      { newlinesBetween: true },
+
       'types-constants',
 
       { newlinesBetween: true },
 
       'local-folders',
       'local-files',
-      // 'parent',
       'upstream',
 
       { newlinesBetween: true },
