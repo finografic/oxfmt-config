@@ -1,5 +1,5 @@
 import type { OxfmtConfig } from 'types/oxfmt.types';
-import { jsdocConfig } from './jsdoc.config';
+// import { jsdocConfig } from './jsdoc.config';
 
 export const base = {
   arrowParens: 'always',
@@ -14,5 +14,5 @@ export const base = {
   tabWidth: 2,
   trailingComma: 'all',
   useTabs: false,
-  ...jsdocConfig,
+  // ...jsdocConfig,
 } as const satisfies Partial<OxfmtConfig>;
