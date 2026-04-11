@@ -46,7 +46,8 @@ export const jsdocConfig = {
      * - `keep` — preserve original formatting.
      */
     // commentLineStrategy: 'singleLine',
-    commentLineStrategy: 'multiline',
+    // commentLineStrategy: 'multiline',
+    commentLineStrategy: 'keep',
 
     /**
      * Emit `@description` tag instead of inline description.
