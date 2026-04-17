@@ -10,6 +10,8 @@
  */
 import type { OxfmtConfig } from 'oxfmt';
 
+import type { SortImportsConfig } from 'types/sorting.types';
+
 export const sorting = {
   sortImports: {
     newlinesBetween: false,
@@ -62,9 +64,8 @@ export const sorting = {
       'styles',
       'unknown',
     ],
-  },
+  } as const satisfies SortImportsConfig,
   rules: {
     'typescript/no-import-type-side-effects': 'error',
   },
-  sortPackageJson: false,
 } as const satisfies Partial<OxfmtConfig>;

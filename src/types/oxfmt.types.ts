@@ -1,5 +1,5 @@
-import type { RemoveIndexSignature } from '@finografic/core';
 import type { OxfmtConfig as OxfmtConfigOriginal } from 'oxfmt';
+import type { OmitIndexSignature } from 'type-fest';
 
 /**
  * Removes string / number / symbol index signatures so only explicitly declared keys remain.
@@ -14,7 +14,7 @@ import type { OxfmtConfig as OxfmtConfigOriginal } from 'oxfmt';
  *
  * @see https://www.typescriptlang.org/docs/handbook/2/mapped-types.html#key-remapping-via-as
  */
-export type OxfmtConfig = RemoveIndexSignature<OxfmtConfigOriginal> & {
+export type OxfmtConfig = OmitIndexSignature<OxfmtConfigOriginal> & {
   jsdoc?: { [k: string]: unknown } | false;
 };
 

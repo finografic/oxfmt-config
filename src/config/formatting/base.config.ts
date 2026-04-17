@@ -12,6 +12,7 @@ export const base = {
   quoteProps: 'consistent',
   semi: true,
   singleQuote: true,
+  sortPackageJson: false,
   tabWidth: 2,
   trailingComma: 'all',
   useTabs: false,

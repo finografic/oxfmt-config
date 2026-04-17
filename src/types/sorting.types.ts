@@ -1,7 +1,8 @@
-import type { RequiredProp } from '@finografic/core';
+import type {
+  SortImportsConfig as SortImportsConfigOriginal,
+  CustomGroupItemConfig as CustomGroupItemConfigOriginal,
+} from 'oxfmt';
+import type { OmitIndexSignature } from 'type-fest';
 
-import type { OxfmtConfig } from 'types/oxfmt.types';
-
-export type CustomGroupItemConfig = NonNullable<
-  RequiredProp<OxfmtConfig, 'sortImports'>['sortImports']['customGroups']
->[number];
+export type SortImportsConfig = OmitIndexSignature<SortImportsConfigOriginal>;
+export type CustomGroupItemConfig = OmitIndexSignature<CustomGroupItemConfigOriginal>;

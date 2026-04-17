@@ -128,5 +128,8 @@
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged --allow-empty"
+  },
+  "dependencies": {
+    "type-fest": "^5.6.0"
   }
 }
