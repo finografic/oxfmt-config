@@ -43,9 +43,25 @@ export default defineConfig({
     'eslint/object-shorthand': 'error',
     'eslint/eqeqeq': ['error', 'always', { null: 'ignore' }],
     'eslint/curly': ['error', 'multi-line'],
-
     'eslint/no-unused-vars': 'off',
     // 'eslint/no-redeclare': 'off',
+
+    'curly': ['error', 'multi-line'],
+    'prefer-const': ['error', { destructuring: 'all' }],
+    'prefer-destructuring': [
+      'error',
+      {
+        VariableDeclarator: { array: false, object: true },
+      },
+    ],
+    'unicode-bom': ['error', 'never'],
+
+    'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
+    'import/no-duplicates': 'error',
+    'typescript/consistent-type-imports': [
+      'error',
+      { prefer: 'type-imports', fixStyle: 'separate-type-imports' },
+    ],
 
     'typescript/no-unused-vars': [
       'error',
@@ -60,12 +76,6 @@ export default defineConfig({
       },
     ],
     'typescript/no-redeclare': 'warn',
-    'typescript/consistent-type-imports': [
-      'error',
-      { prefer: 'type-imports', fixStyle: 'separate-type-imports' },
-    ],
-    'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
-
     'typescript/adjacent-overload-signatures': 'error',
     'typescript/array-type': ['warn', { default: 'array-simple' }],
     'typescript/ban-ts-comment': ['warn', { 'ts-expect-error': 'allow-with-description' }],
@@ -80,35 +90,19 @@ export default defineConfig({
     'typescript/unified-signatures': 'error',
     'typescript/no-floating-promises': 'off',
     'typescript/await-thenable': 'error',
-
-    'import/no-duplicates': 'error',
-
-    // Vitest / ESM hoisting often uses `vi.mock`
-    'import/first': 'off',
-    'import/no-amd': 'error',
-    'import/no-self-import': 'error',
-
-    // ======================================================================== //
-    'curly': ['error', 'multi-line'],
-    'prefer-const': ['error', { destructuring: 'all' }],
-    'prefer-destructuring': [
-      'error',
-      {
-        VariableDeclarator: { array: false, object: true },
-      },
-    ],
-    'unicode-bom': ['error', 'never'],
     'typescript/consistent-indexed-object-style': ['error', 'record'],
-
     'typescript/explicit-function-return-type': 'error',
-    'vitest/require-mock-type-parameters': 'off',
-    'vitest/prefer-snapshot-hint': 'off',
   },
   overrides: [
     {
-      files: ['tasks/e2e/test/*.test.ts'],
+      files: ['**/*.spec.ts,**/*.test.ts,__tests__/**/*.ts'],
       rules: {
+        'import/first': 'off',
+        'import/no-amd': 'error',
+        'import/no-self-import': 'error',
         'vitest/valid-title': ['off'],
+        'vitest/require-mock-type-parameters': 'off',
+        'vitest/prefer-snapshot-hint': 'off',
       },
     },
     {
