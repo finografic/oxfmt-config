@@ -5,7 +5,7 @@ import type { OxfmtHtmlConfig } from 'types/oxfmt.types';
 export const htmlConfig = {
   bracketSameLine: false,
   htmlWhitespaceSensitivity: 'css', // "css" (default) | "strict" | "ignore",
-  printWidth: 80,
+  printWidth: 110,
   singleAttributePerLine: false,
   singleQuote: false,
 } as const satisfies Partial<OxfmtHtmlConfig>;

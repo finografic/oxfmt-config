@@ -39,7 +39,7 @@ export default defineConfig({
 | `typescript` | TS/TSX-specific overrides          | Placeholder — no options set yet           |
 | `markdown`   | Prose formatting                   | `proseWrap: "preserve"`, `printWidth: 110` |
 | `json`       | JSON/JSONC files                   | `trailingComma: "none"`                    |
-| `css`        | CSS/SCSS/Less files                | `printWidth: 80`, `singleQuote: false`     |
+| `css`        | CSS/SCSS/Less files                | `printWidth: 110`, `singleQuote: false`    |
 | `sorting`    | Import + package.json sorting      | `sortImports`, `sortPackageJson: false`    |
 
 > **Note:** Never spread `$schema` inside a preset object — doing so silently resets all formatting to oxfmt defaults. Always set `$schema` directly in `defineConfig()`.
