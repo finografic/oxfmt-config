@@ -1,22 +1,27 @@
-import type { OxfmtConfig as OxfmtConfigOriginal } from 'oxfmt';
+import type {
+  OxfmtConfig as OxfmtConfigOriginal,
+  OxfmtOverrideConfig as OxfmtOverrideConfigOriginal,
+} from 'oxfmt';
 import type { OmitIndexSignature } from 'type-fest';
 
 /**
  * Removes string / number / symbol index signatures so only explicitly declared keys remain.
  *
- * oxfmt’s `OxfmtConfig` ends with `[k: string]: unknown`, which allows any extra property.
- * This mapped type filters out those index keys (`string extends K`, etc.).
+ * Oxfmt’s `OxfmtConfig` ends with `[k: string]: unknown`, which allows any extra property. This mapped type
+ * filters out those index keys (`string extends K`, etc.).
  */
 
 /**
- * Same as `OxfmtConfig` from `oxfmt`, but **without** `[k: string]: unknown`.
- * Use this when you want excess-property checking on config objects.
+ * Same as `OxfmtConfig` from `oxfmt`, but **without** `[k: string]: unknown`. Use this when you want
+ * excess-property checking on config objects.
  *
  * @see https://www.typescriptlang.org/docs/handbook/2/mapped-types.html#key-remapping-via-as
  */
 export type OxfmtConfig = OmitIndexSignature<OxfmtConfigOriginal> & {
   jsdoc?: { [k: string]: unknown } | false;
 };
+
+export type OxfmtOverrideConfig = OmitIndexSignature<OxfmtOverrideConfigOriginal>;
 
 // ========================================================================== //
 // NOTE: custom, opinionated config types

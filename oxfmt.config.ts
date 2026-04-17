@@ -1,4 +1,5 @@
 import { defineConfig } from 'oxfmt';
+import type { OxfmtConfig, OxfmtOverrideConfig } from './src/types/oxfmt.types';
 
 import {
   agentMarkdown,
@@ -9,14 +10,11 @@ import {
   json,
   markdown,
   sorting,
-  typescript,
 } from './dist/index.mjs';
 
 export default defineConfig({
-  $schema: './node_modules/oxfmt/configuration_schema.json',
   ignorePatterns,
   ...base,
-  ...typescript,
   ...sorting,
   overrides: [
     { files: ['*.json', '*.jsonc'], excludeFiles: [], options: { ...json } },
@@ -31,5 +29,5 @@ export default defineConfig({
       options: { ...agentMarkdown },
     },
     { files: ['*.css', '*.scss'], excludeFiles: [], options: { ...css } },
-  ],
-} satisfies ReturnType<typeof defineConfig>);
+  ] satisfies OxfmtOverrideConfig[],
+} satisfies OxfmtConfig);
