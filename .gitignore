@@ -14,12 +14,16 @@ build/
 # Agents
 .codex/
 .claude/
+!.claude/handoff.md
 !.claude/settings.json
-!.claude/commands/
+.worktrees/
+**/worktrees/
 
 # IDE
-.cursor/
+**/.cursor/**
+!**/.cursor/.gitkeep
 !.cursor/rules/
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo
