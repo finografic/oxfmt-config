@@ -1,12 +1,14 @@
 import type { OxfmtConfig } from 'oxfmt/types/oxfmt.types';
 
-export const ignorePatterns = [
+export const IGNORE_PATTERNS_FORMAT = [
   '**/node_modules/**',
   '**/dist/**',
   '**/build/**',
   '**/bin/**',
   '**/coverage/**',
+  '**/.astro/**',
   '**/.turbo/**',
+  '*.d.ts',
   '**/*.min.*',
   '**/*.map',
 

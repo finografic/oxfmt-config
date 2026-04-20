@@ -1,5 +1,3 @@
-import type { OxfmtConfig } from 'oxfmt/types/oxfmt.types';
-
 /**
  * Known agent/AI instruction document paths across the ecosystem.
  *
@@ -52,18 +50,3 @@ export const AGENT_DOC_PATHS = [
 export const AGENT_DOC_MARKDOWN_PATHS = AGENT_DOC_PATHS.filter(
   (p): p is Extract<(typeof AGENT_DOC_PATHS)[number], `${string}.md`> => p.endsWith('.md'),
 );
-
-/**
- * Relaxed markdown formatting for agent instruction docs.
- *
- * Currently identical to the standard `markdown` preset because oxfmt only handles formatting (whitespace,
- * wrapping, line endings), not structural linting (heading hierarchy, duplicate headings, etc.).
- *
- * The value of this preset is future-proofing: if oxfmt gains markdown structure rules, agent docs will
- * already have a separate, relaxed config.
- */
-export const agentMarkdown = {
-  embeddedLanguageFormatting: 'off',
-  proseWrap: 'preserve',
-  printWidth: 180,
-} as const satisfies Partial<OxfmtConfig>;

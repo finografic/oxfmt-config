@@ -1,4 +1,6 @@
-export const lintPlugins = [
+import type { OxlintConfig } from 'oxlint';
+
+export const plugins = [
   'eslint',
   'typescript',
   'unicorn',
@@ -10,4 +12,4 @@ export const lintPlugins = [
   'node',
   'promise',
   'vitest',
-] as const;
+] as const satisfies OxlintConfig['plugins'];

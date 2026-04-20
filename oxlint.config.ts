@@ -2,22 +2,23 @@ import { defineConfig } from 'oxlint';
 import type { OxlintConfig } from 'oxlint';
 
 import {
-  baseRules,
+  rules,
+  loosenRules,
   configOverrides,
   categories,
-  lintIgnorePatterns,
+  ignorePatterns,
   options,
   env,
-  lintPlugins,
+  plugins,
   testOverrides,
-} from './dist/index.mjs';
+} from './dist/oxlint.mjs';
 
 export default defineConfig({
-  plugins: [...lintPlugins],
-  ignorePatterns: [...lintIgnorePatterns],
+  plugins: [...plugins],
   env,
   options,
-  rules: { ...baseRules },
   categories,
+  rules: { ...rules, ...loosenRules },
   overrides: [testOverrides, configOverrides],
+  ignorePatterns: [...ignorePatterns],
 } satisfies OxlintConfig);

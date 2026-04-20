@@ -10,7 +10,7 @@ import {
   json,
   markdown,
   sorting,
-} from './dist/index.mjs';
+} from './dist/oxfmt.mjs';
 
 export default defineConfig({
   $schema: './node_modules/oxfmt/configuration_schema.json',
