@@ -2,7 +2,7 @@
 
 > Shareable oxfmt formatter and oxlint linter configuration for the finografic ecosystem
 
-One install for both [oxfmt](https://oxc.rs/docs/guide/usage/formatter) and [oxlint](https://oxc.rs/docs/guide/usage/linter) — the Rust-powered Oxc/VoidZero toolchain. Composable presets spread directly into your config files.
+One install for both [**oxfmt**](https://oxc.rs/docs/guide/usage/formatter) and [**oxlint**](https://oxc.rs/docs/guide/usage/linter) — the Rust-powered **Oxc/VoidZero** toolchain. Composable presets spread directly into your config files.
 
 ## Installation
 
@@ -18,7 +18,17 @@ pnpm add -D oxfmt oxlint @finografic/oxc-config
 
 ```ts
 import { defineConfig } from 'oxfmt';
-import { base, css, json, markdown, sorting, ignorePatterns } from '@finografic/oxc-config';
+import type { OxfmtConfig, OxfmtOverrideConfig } from '@finografic/oxc-config';
+import {
+  AGENT_DOC_MARKDOWN_PATHS,
+  agentMarkdown,
+  base,
+  css,
+  ignorePatterns,
+  json,
+  markdown,
+  sorting,
+} from '@finografic/oxc-config';
 
 export default defineConfig({
   $schema: './node_modules/oxfmt/configuration_schema.json',
@@ -27,13 +37,16 @@ export default defineConfig({
   ...sorting,
   overrides: [
     { files: ['*.json', '*.jsonc'], excludeFiles: [], options: { ...json } },
-    { files: ['*.md', '*.mdx'], excludeFiles: [], options: { ...markdown } },
+    { files: ['*.md', '*.mdx'], excludeFiles: [...AGENT_DOC_MARKDOWN_PATHS], options: { ...markdown } },
+    { files: [...AGENT_DOC_MARKDOWN_PATHS], excludeFiles: [], options: { ...agentMarkdown } },
     { files: ['*.css', '*.scss'], excludeFiles: [], options: { ...css } },
-  ],
-} satisfies ReturnType<typeof defineConfig>);
+  ] satisfies OxfmtOverrideConfig[],
+} satisfies OxfmtConfig);
 ```
 
 > **`$schema` gotcha:** Never spread `$schema` inside a preset object — it silently resets all formatting to oxfmt defaults. Always set it directly in `defineConfig()`. See [docs/SETUP_OXFMT_CONFIG.md](./docs/SETUP_OXFMT_CONFIG.md) for details.
+>
+> **`satisfies OxfmtConfig`** uses our index-signature-stripped type (via `OmitIndexSignature` from type-fest), giving strict excess-property checking on the config object. **`satisfies OxfmtOverrideConfig[]`** on the overrides array does the same per override. These are stricter than `satisfies ReturnType<typeof defineConfig>` from oxfmt's own type.
 
 ### Presets
 
@@ -91,26 +104,7 @@ sortImports: {
 
 See [docs/OXFMT_SORT_GROUPS.md](./docs/OXFMT_SORT_GROUPS.md) for the full groups reference.
 
-### Agent instruction paths
-
-```ts
-import { agentMarkdown, AGENT_DOC_MARKDOWN_PATHS, ignorePatterns } from '@finografic/oxc-config';
-
-overrides: [
-  {
-    files: ['*.md', '*.mdx'],
-    excludeFiles: [...AGENT_DOC_MARKDOWN_PATHS],
-    options: { ...markdown },
-  },
-  {
-    files: [...AGENT_DOC_MARKDOWN_PATHS],
-    excludeFiles: [],
-    options: { ...agentMarkdown }, // relaxed formatting for Copilot/Cursor/Claude/AGENTS.md
-  },
-],
-```
-
-`AGENT_DOC_PATHS` and `AGENT_DOC_MARKDOWN_PATHS` cover all known AI instruction file paths across tools (GitHub Copilot, Cursor, Windsurf, Claude, Cline, etc.).
+`AGENT_DOC_PATHS` and `AGENT_DOC_MARKDOWN_PATHS` cover all known AI instruction file paths across tools (GitHub Copilot, Cursor, Windsurf, Claude, Cline, etc.). The two-path markdown override pattern is shown in all examples above.
 
 ### Monorepo examples
 
@@ -118,18 +112,27 @@ overrides: [
 
 ```ts
 import { defineConfig } from 'oxfmt';
+import type { OxfmtConfig, OxfmtOverrideConfig } from '@finografic/oxc-config';
 import {
-  base, css, json, markdown, sorting, typescript, ignorePatterns,
+  AGENT_DOC_MARKDOWN_PATHS,
   SORT_PRESET_CLIENT,
-  SORTING_GROUP_REACT,
-  SORTING_GROUP_WORKSPACE,
-  SORTING_GROUP_PAGES_COMPONENTS,
-  SORTING_GROUP_HOOKS,
   SORTING_GROUP_CLIENT_ROUTES,
+  SORTING_GROUP_HOOKS,
   SORTING_GROUP_LIB_UTILS,
-  SORTING_GROUP_TYPES_CONSTANTS,
+  SORTING_GROUP_PAGES_COMPONENTS,
+  SORTING_GROUP_REACT,
   SORTING_GROUP_STYLES,
   SORTING_GROUP_TESTS,
+  SORTING_GROUP_TYPES_CONSTANTS,
+  SORTING_GROUP_WORKSPACE,
+  agentMarkdown,
+  base,
+  css,
+  ignorePatterns,
+  json,
+  markdown,
+  sorting,
+  typescript,
 } from '@finografic/oxc-config';
 
 export default defineConfig({
@@ -162,26 +165,35 @@ export default defineConfig({
   overrides: [
     { files: ['*.ts', '*.tsx'], excludeFiles: [], options: { ...typescript } },
     { files: ['*.json', '*.jsonc'], excludeFiles: [], options: { ...json } },
-    { files: ['*.md', '*.mdx'], excludeFiles: [], options: { ...markdown } },
+    { files: ['*.md', '*.mdx'], excludeFiles: [...AGENT_DOC_MARKDOWN_PATHS], options: { ...markdown } },
+    { files: [...AGENT_DOC_MARKDOWN_PATHS], excludeFiles: [], options: { ...agentMarkdown } },
     { files: ['*.css', '*.scss'], excludeFiles: [], options: { ...css } },
-  ],
-} satisfies ReturnType<typeof defineConfig>);
+  ] satisfies OxfmtOverrideConfig[],
+} satisfies OxfmtConfig);
 ```
 
 #### Server — Node.js
 
 ```ts
 import { defineConfig } from 'oxfmt';
+import type { OxfmtConfig, OxfmtOverrideConfig } from '@finografic/oxc-config';
 import {
-  base, json, markdown, sorting, typescript, ignorePatterns,
+  AGENT_DOC_MARKDOWN_PATHS,
   SORT_PRESET_SERVER,
-  SORTING_GROUP_WORKSPACE,
-  SORTING_GROUP_SERVER_ROUTES,
-  SORTING_GROUP_SERVER_LAYERS,
   SORTING_GROUP_API,
   SORTING_GROUP_LIB_UTILS,
-  SORTING_GROUP_TYPES_CONSTANTS,
+  SORTING_GROUP_SERVER_LAYERS,
+  SORTING_GROUP_SERVER_ROUTES,
   SORTING_GROUP_TESTS,
+  SORTING_GROUP_TYPES_CONSTANTS,
+  SORTING_GROUP_WORKSPACE,
+  agentMarkdown,
+  base,
+  ignorePatterns,
+  json,
+  markdown,
+  sorting,
+  typescript,
 } from '@finografic/oxc-config';
 
 export default defineConfig({
@@ -211,9 +223,10 @@ export default defineConfig({
   overrides: [
     { files: ['*.ts'], excludeFiles: [], options: { ...typescript } },
     { files: ['*.json', '*.jsonc'], excludeFiles: [], options: { ...json } },
-    { files: ['*.md', '*.mdx'], excludeFiles: [], options: { ...markdown } },
-  ],
-} satisfies ReturnType<typeof defineConfig>);
+    { files: ['*.md', '*.mdx'], excludeFiles: [...AGENT_DOC_MARKDOWN_PATHS], options: { ...markdown } },
+    { files: [...AGENT_DOC_MARKDOWN_PATHS], excludeFiles: [], options: { ...agentMarkdown } },
+  ] satisfies OxfmtOverrideConfig[],
+} satisfies OxfmtConfig);
 ```
 
 ---

@@ -11,6 +11,7 @@ import type { OmitIndexSignature } from 'type-fest';
  * @see https://www.typescriptlang.org/docs/handbook/2/mapped-types.html#key-remapping-via-as
  */
 export type OxfmtConfig = OmitIndexSignature<OxfmtConfigOriginal> & {
+  $schema?: string;
   jsdoc?: Record<string, unknown> | false;
 };
 

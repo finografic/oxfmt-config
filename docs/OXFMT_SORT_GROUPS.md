@@ -38,7 +38,8 @@ Presets are ordered arrays you can spread into `sortImports.customGroups`. Pair 
 
 ```ts
 import { defineConfig } from 'oxfmt';
-import { base, sorting, ignorePatterns, SORT_PRESET_CLIENT } from '@finografic/oxc-config';
+import type { OxfmtConfig } from '@finografic/oxc-config';
+import { SORT_PRESET_CLIENT, base, ignorePatterns, sorting } from '@finografic/oxc-config';
 
 export default defineConfig({
   $schema: './node_modules/oxfmt/configuration_schema.json',
@@ -67,7 +68,7 @@ export default defineConfig({
       'unknown',
     ],
   },
-} satisfies ReturnType<typeof defineConfig>);
+} satisfies OxfmtConfig);
 ```
 
 Adjust the `groups` list if you omit some preset entries.
