@@ -1,6 +1,7 @@
 import type { OxfmtHtmlConfig } from 'oxfmt/types/oxfmt.types';
 
-// NOTE: Oxfmt options that relate to HTML formatting
+// NOTE: Oxfmt options that relate to HTML formatting.
+// No specific HTML rules actually exist.
 
 export const html = {
   bracketSameLine: false,

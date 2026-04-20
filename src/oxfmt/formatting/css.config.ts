@@ -1,6 +1,7 @@
 import type { OxfmtCssConfig } from 'oxfmt/types/oxfmt.types';
 
-// NOTE: Oxfmt options that relate to CSS formatting
+// NOTE: Oxfmt options that relate to CSS formatting.
+// No specific CSS rules actually exist.
 
 export const css = {
   htmlWhitespaceSensitivity: 'css', // "css" (default) | "strict" | "ignore",

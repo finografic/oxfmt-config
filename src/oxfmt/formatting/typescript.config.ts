@@ -1,5 +1,8 @@
 import type { OxfmtConfig } from 'oxfmt/types/oxfmt.types';
 
+// NOTE: Oxfmt options that relate to TypeScript formatting.
+// No specific TypeScript rules actually exist.
+
 /**
  * TypeScript/TSX-specific formatting overrides.
  *

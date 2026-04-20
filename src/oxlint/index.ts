@@ -7,8 +7,12 @@ export { plugins } from './plugins';
 // ── oxlint: composable linting pieces ─────────────────
 export { baseRules } from './rules/base.rules';
 export { typescriptRules } from './rules/typescript.rules';
-export { loosenRules } from './rules/loosen.rules';
+
+// ── oxlint: rule composed ─────────────────────────────
 export { rules } from './rules/index';
+
+// ── oxlint: optional loosened rules ────-──────────────
+export { loosenRules } from './rules/loosen.rules';
 
 // ── oxlint: composable linting pieces ─────────────────
 export { configOverrides } from './overrides/config.overrides';
