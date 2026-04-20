@@ -1,8 +1,8 @@
-# 🛠️ @finografic/oxc-config
+# @finografic/oxc-config
 
 > Shareable oxfmt formatter and oxlint linter configuration for the finografic ecosystem
 
-Composable presets for [oxfmt](https://oxc.rs/docs/guide/usage/formatter) and composable rules for [oxlint](https://oxc.rs/docs/guide/usage/linter) — both Rust-powered tools from the Oxc/VoidZero ecosystem.
+One install for both [oxfmt](https://oxc.rs/docs/guide/usage/formatter) and [oxlint](https://oxc.rs/docs/guide/usage/linter) — the Rust-powered Oxc/VoidZero toolchain. Composable presets spread directly into your config files.
 
 ## Installation
 
@@ -10,9 +10,11 @@ Composable presets for [oxfmt](https://oxc.rs/docs/guide/usage/formatter) and co
 pnpm add -D oxfmt oxlint @finografic/oxc-config
 ```
 
-## Usage
+---
 
-Create an `oxfmt.config.ts` in your project root:
+## oxfmt — Formatter
+
+### Minimal `oxfmt.config.ts`
 
 ```ts
 import { defineConfig } from 'oxfmt';
@@ -31,24 +33,25 @@ export default defineConfig({
 } satisfies ReturnType<typeof defineConfig>);
 ```
 
-## Available Presets
+> **`$schema` gotcha:** Never spread `$schema` inside a preset object — it silently resets all formatting to oxfmt defaults. Always set it directly in `defineConfig()`. See [docs/SETUP_OXFMT_CONFIG.md](./docs/SETUP_OXFMT_CONFIG.md) for details.
 
-| Preset       | Description                        | Key Options                                |
-| ------------ | ---------------------------------- | ------------------------------------------ |
-| `base`       | Foundation defaults (spread first) | `printWidth: 110`, `singleQuote`, `semi`   |
-| `typescript` | TS/TSX-specific overrides          | Placeholder — no options set yet           |
-| `markdown`   | Prose formatting                   | `proseWrap: "preserve"`, `printWidth: 110` |
-| `json`       | JSON/JSONC files                   | `trailingComma: "none"`                    |
-| `css`        | CSS/SCSS/Less files                | `printWidth: 110`, `singleQuote: false`    |
-| `sorting`    | Import + package.json sorting      | `sortImports`, `sortPackageJson: false`    |
+### Presets
 
-> **Note:** Never spread `$schema` inside a preset object — doing so silently resets all formatting to oxfmt defaults. Always set `$schema` directly in `defineConfig()`.
+| Preset       | Description                        | Key options                                       |
+| ------------ | ---------------------------------- | ------------------------------------------------- |
+| `base`       | Foundation defaults (spread first) | `printWidth: 110`, `singleQuote`, `semi`          |
+| `typescript` | TS/TSX-specific overrides          | `quoteProps: 'consistent'`                        |
+| `markdown`   | Prose formatting                   | `proseWrap: 'preserve'`, `printWidth: 110`        |
+| `json`       | JSON/JSONC files                   | `trailingComma: 'none'`                           |
+| `css`        | CSS/SCSS files                     | `printWidth: 110`, `singleQuote: false`           |
+| `html`       | HTML files                         | `bracketSameLine: false`, `singleQuote: false`    |
+| `react`      | JSX/React files                    | `bracketSameLine: false`, `jsxSingleQuote: false` |
+| `sorting`    | Import + package.json sorting      | `sortImports`, `sortPackageJson: false`           |
+| `jsdoc`      | JSDoc comment formatting           | Already spread inside `base`                      |
 
-## Sorting groups
+### Sorting groups
 
-Composable import-sort group constants. Import whichever groups match your project structure and use them in `sortImports.customGroups` and `sortImports.groups`.
-
-Source files: `src/oxfmt/sorting-groups/` (`base.groups.ts`, `client.groups.ts`, `server.groups.ts`, `react.groups.ts`, `presets.ts`).
+Composable import-sort constants — use in `sortImports.customGroups` and `sortImports.groups`. Source: `src/oxfmt/sorting-groups/`.
 
 | Constant                         | Group name         | Matches                                                                       |
 | -------------------------------- | ------------------ | ----------------------------------------------------------------------------- |
@@ -65,9 +68,9 @@ Source files: `src/oxfmt/sorting-groups/` (`base.groups.ts`, `client.groups.ts`,
 | `SORTING_GROUP_SERVER_LAYERS`    | `server-layers`    | `middlewares/**`, `db/**`, `schemas/**` (no `routes/**`; use `server-routes`) |
 | `SORTING_GROUP_API`              | `api`              | `openapi/**`, `i18n/**`                                                       |
 
-### Presets
+#### Sort presets
 
-Ready-made `customGroups` arrays live in `src/oxfmt/sorting-groups/presets.ts`:
+Ready-made `customGroups` arrays. Spread into `sortImports.customGroups` and mirror the group names in `sortImports.groups`.
 
 | Export                | Typical use        |
 | --------------------- | ------------------ |
@@ -76,47 +79,48 @@ Ready-made `customGroups` arrays live in `src/oxfmt/sorting-groups/presets.ts`:
 | `SORT_PRESET_CLI`     | CLI tools          |
 | `SORT_PRESET_LIBRARY` | Shared packages    |
 
-Spread them into `sortImports.customGroups` and mirror the same group names in `sortImports.groups` (see client/server examples below).
+When overriding `sortImports`, spread the base config first so `sorting.rules` and `sorting.sortPackageJson` are still inherited:
+
+```ts
+sortImports: {
+  ...sorting.sortImports,
+  customGroups: [...SORT_PRESET_CLIENT],
+  groups: ['value-builtin', 'react', 'workspace', /* ... */],
+},
+```
+
+See [docs/OXFMT_SORT_GROUPS.md](./docs/OXFMT_SORT_GROUPS.md) for the full groups reference.
 
 ### Agent instruction paths
 
-`AGENT_DOC_PATHS`, `AGENT_DOC_MARKDOWN_PATHS`, and `agentMarkdown` are defined in `src/patterns/agent-docs.patterns.ts` for relaxed markdown formatting on AI instruction files (Copilot, Cursor, `AGENTS.md`, etc.). The root `oxfmt.config.ts` in this repo shows how to combine them with `overrides`.
+```ts
+import { agentMarkdown, AGENT_DOC_MARKDOWN_PATHS, ignorePatterns } from '@finografic/oxc-config';
 
-When spreading `...sorting` and overriding `sortImports`, the explicit key wins — `sorting.rules` and `sorting.sortPackageJson` are still inherited from the spread.
-
-### Migration from `SORTING_GROUP_HOOKS_ROUTES`
-
-If you previously used `SORTING_GROUP_HOOKS_ROUTES` / `'hooks-routes'`, split into hooks and client routes:
-
-```diff
-- import { SORTING_GROUP_HOOKS_ROUTES } from '@finografic/oxc-config';
-+ import { SORTING_GROUP_HOOKS, SORTING_GROUP_CLIENT_ROUTES } from '@finografic/oxc-config';
+overrides: [
+  {
+    files: ['*.md', '*.mdx'],
+    excludeFiles: [...AGENT_DOC_MARKDOWN_PATHS],
+    options: { ...markdown },
+  },
+  {
+    files: [...AGENT_DOC_MARKDOWN_PATHS],
+    excludeFiles: [],
+    options: { ...agentMarkdown }, // relaxed formatting for Copilot/Cursor/Claude/AGENTS.md
+  },
+],
 ```
 
-```diff
-- 'hooks-routes',
-+ 'hooks',
-+ 'client-routes',
-```
+`AGENT_DOC_PATHS` and `AGENT_DOC_MARKDOWN_PATHS` cover all known AI instruction file paths across tools (GitHub Copilot, Cursor, Windsurf, Claude, Cline, etc.).
 
-Server configs should list `'server-routes'` before `'server-layers'` when using `SORTING_GROUP_SERVER_ROUTES`.
+### Monorepo examples
 
-## Monorepo Setup
-
-In a monorepo, each package owns its `oxfmt.config.ts`. The examples below cover a typical split: a `client/` package running Vite + React + TypeScript, and a `server/` package running Node.js.
-
-### Client — Vite + React + TypeScript (`client/`)
+#### Client — Vite + React + TypeScript
 
 ```ts
 import { defineConfig } from 'oxfmt';
 import {
-  base,
-  css,
-  json,
-  markdown,
-  sorting,
-  typescript,
-  ignorePatterns,
+  base, css, json, markdown, sorting, typescript, ignorePatterns,
+  SORT_PRESET_CLIENT,
   SORTING_GROUP_REACT,
   SORTING_GROUP_WORKSPACE,
   SORTING_GROUP_PAGES_COMPONENTS,
@@ -135,17 +139,7 @@ export default defineConfig({
   ...sorting,
   sortImports: {
     newlinesBetween: false,
-    customGroups: [
-      SORTING_GROUP_REACT,
-      SORTING_GROUP_WORKSPACE,
-      SORTING_GROUP_PAGES_COMPONENTS,
-      SORTING_GROUP_HOOKS,
-      SORTING_GROUP_CLIENT_ROUTES,
-      SORTING_GROUP_LIB_UTILS,
-      SORTING_GROUP_TYPES_CONSTANTS,
-      SORTING_GROUP_STYLES,
-      SORTING_GROUP_TESTS,
-    ],
+    customGroups: [...SORT_PRESET_CLIENT],
     groups: [
       'value-builtin',
       'react',
@@ -174,17 +168,13 @@ export default defineConfig({
 } satisfies ReturnType<typeof defineConfig>);
 ```
 
-### Server — Node.js (`server/`)
+#### Server — Node.js
 
 ```ts
 import { defineConfig } from 'oxfmt';
 import {
-  base,
-  json,
-  markdown,
-  sorting,
-  typescript,
-  ignorePatterns,
+  base, json, markdown, sorting, typescript, ignorePatterns,
+  SORT_PRESET_SERVER,
   SORTING_GROUP_WORKSPACE,
   SORTING_GROUP_SERVER_ROUTES,
   SORTING_GROUP_SERVER_LAYERS,
@@ -201,15 +191,7 @@ export default defineConfig({
   ...sorting,
   sortImports: {
     newlinesBetween: false,
-    customGroups: [
-      SORTING_GROUP_WORKSPACE,
-      SORTING_GROUP_SERVER_ROUTES,
-      SORTING_GROUP_SERVER_LAYERS,
-      SORTING_GROUP_API,
-      SORTING_GROUP_LIB_UTILS,
-      SORTING_GROUP_TYPES_CONSTANTS,
-      SORTING_GROUP_TESTS,
-    ],
+    customGroups: [...SORT_PRESET_SERVER],
     groups: [
       'value-builtin',
       'workspace',
@@ -234,40 +216,150 @@ export default defineConfig({
 } satisfies ReturnType<typeof defineConfig>);
 ```
 
-## Source layout (this repo)
+---
 
-| Area                           | Path                                                                                                     |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| Formatting presets             | `src/oxfmt/formatting/` (`base`, `typescript`, `json`, `markdown`, `css`, `sorting`, `html`, `react`, …) |
-| Sorting groups + presets       | `src/oxfmt/sorting-groups/` (`*.groups.ts`, `presets.ts`)                                                |
-| Types                          | `src/oxfmt/types/` (`oxfmt.types.ts`, `sorting.types.ts`)                                                |
-| Linting pieces                 | `src/oxlint/` (`plugins.ts`, `categories.ts`, `options.ts`, `ignore.patterns.ts`, `rules/`)              |
-| Ignore globs + agent doc paths | `src/patterns/` (`ignore.patterns.ts`, `agent-docs.patterns.ts`)                                         |
-| Public API                     | `src/index.ts` → `dist/index.mjs`                                                                        |
+## oxlint — Linter
 
-Both `oxfmt.config.ts` and `oxlint.config.ts` import from `./dist/index.mjs` (not `src/`) so the tools always see the built bundle; rebuild with `pnpm build` after editing `src/`.
+### Minimal `oxlint.config.ts`
+
+```ts
+import { defineConfig } from 'oxlint';
+import type { OxlintConfig } from 'oxlint';
+import {
+  baseRules,
+  configOverrides,
+  lintCategories,
+  lintIgnorePatterns,
+  lintOptions,
+  lintPlugins,
+  testOverrides,
+} from '@finografic/oxc-config';
+
+export default defineConfig({
+  plugins: [...lintPlugins],
+  ...lintOptions,
+  rules: { ...baseRules },
+  categories: { ...lintCategories },
+  overrides: [testOverrides, configOverrides],
+  ignorePatterns: [...lintIgnorePatterns],
+} satisfies OxlintConfig);
+```
+
+### Exported pieces
+
+| Export               | Type             | Purpose                                                   |
+| -------------------- | ---------------- | --------------------------------------------------------- |
+| `lintPlugins`        | `string[]`       | Plugin list (eslint, typescript, unicorn, react, …)       |
+| `lintOptions`        | Config fragment  | Spreads `env` (builtin, node) + `options` (typeCheck, …)  |
+| `lintCategories`     | Config fragment  | `{ correctness: 'error', perf: 'error' }`                 |
+| `lintIgnorePatterns` | `string[]`       | Ignore globs: `*.d.ts`, `.astro/**`, `.claude/**`, …      |
+| `baseRules`          | `DummyRuleMap`   | Core TypeScript + import + ESLint rule set (~60 rules)    |
+| `testOverrides`      | `OxlintOverride` | Relaxed rules for `*.spec.ts` / `*.test.ts` files         |
+| `configOverrides`    | `OxlintOverride` | Allows default exports in `oxlint/oxfmt/vitest.config.ts` |
+
+`lintOptions` spreads two top-level keys: `env: { builtin: true, node: true }` and `options: { typeCheck: true, typeAware: true, reportUnusedDisableDirectives: 'error' }`.
+
+### Composition patterns
+
+**Add rules without losing the base set:**
+
+```ts
+rules: {
+  ...baseRules,
+  'unicorn/no-array-for-each': 'error',
+},
+```
+
+**Extend ignore patterns:**
+
+```ts
+ignorePatterns: [...lintIgnorePatterns, '**/generated/**'],
+```
+
+**Add a custom override:**
+
+```ts
+import type { OxlintOverride } from 'oxlint';
+
+const storybookOverrides: OxlintOverride = {
+  files: ['**/*.stories.ts', '**/*.stories.tsx'],
+  rules: { 'import/no-default-export': 'off' },
+};
+
+overrides: [testOverrides, configOverrides, storybookOverrides],
+```
+
+**Override env for browser projects:**
+
+```ts
+export default defineConfig({
+  ...lintOptions,
+  env: { builtin: true, browser: true }, // replaces node: true
+  // ...
+});
+```
+
+**Disable type-aware rules (faster CI, no tsconfig required):**
+
+```ts
+export default defineConfig({
+  plugins: [...lintPlugins],
+  env: { ...lintOptions.env },
+  options: { typeCheck: false, typeAware: false, reportUnusedDisableDirectives: 'error' },
+  rules: { ...baseRules },
+  categories: { ...lintCategories },
+  overrides: [testOverrides, configOverrides],
+  ignorePatterns: [...lintIgnorePatterns],
+} satisfies OxlintConfig);
+```
+
+### Type-aware linting
+
+Some rules in `baseRules` (e.g. `typescript/await-thenable`) require type information. Install `oxlint-tsgolint` and ensure `tsconfig.json` is at the project root:
+
+```bash
+pnpm add -D oxlint-tsgolint
+```
+
+See [docs/SETUP_OXLINT_CONFIG.md](./docs/SETUP_OXLINT_CONFIG.md) for the full composition reference.
+
+---
+
+## Source layout
+
+| Area                              | Path                                                                            |
+| --------------------------------- | ------------------------------------------------------------------------------- |
+| Formatting presets                | `src/oxfmt/formatting/` (`base`, `css`, `html`, `json`, `markdown`, `react`, …) |
+| Sorting groups + presets          | `src/oxfmt/sorting-groups/` (`*.groups.ts`, `presets.ts`)                       |
+| Types                             | `src/oxfmt/types/` (`oxfmt.types.ts`, `sorting.types.ts`)                       |
+| Linting pieces                    | `src/oxlint/` (`plugins.ts`, `categories.ts`, `options.ts`, `rules/`, …)        |
+| Shared ignore globs + agent paths | `src/patterns/` (`ignore.patterns.ts`, `agent-docs.patterns.ts`)                |
+| Public API                        | `src/index.ts` → `dist/index.mjs`                                               |
+
+Both `oxfmt.config.ts` and `oxlint.config.ts` import from `./dist/index.mjs`. Rebuild with `pnpm build` after editing `src/`.
 
 ## lint-staged
 
-This repo runs **ESLint first, then oxfmt** on code and markdown, and oxfmt-only on JSON/YAML/TOML (see `package.json`):
+This repo runs oxlint then oxfmt on code and markdown, oxfmt-only on JSON/YAML/TOML:
 
 ```json
 {
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,mjs,cjs}": ["eslint --fix", "oxfmt --no-error-on-unmatched-pattern"],
-    "*.md": ["eslint --fix", "oxfmt --no-error-on-unmatched-pattern"],
+    "*.{ts,tsx,js,jsx,mjs,cjs}": [
+      "oxfmt --no-error-on-unmatched-pattern",
+      "oxlint -c oxlint.config.ts --fix --no-error-on-unmatched-pattern"
+    ],
+    "*.md": ["oxfmt --no-error-on-unmatched-pattern", "md-lint --fix"],
     "*.{json,jsonc,yml,yaml,toml}": ["oxfmt --no-error-on-unmatched-pattern"]
   }
 }
 ```
 
-The **pre-commit** hook runs `lint-staged` and then `oxfmt` on the whole tree (`oxfmt --no-error-on-unmatched-pattern`). After cloning or changing hook config, run `pnpm install` (or `npx simple-git-hooks`) so hooks stay registered.
+The pre-commit hook runs `lint-staged` then `oxfmt` on the whole tree. After cloning or changing hook config, run `pnpm install` (or `npx simple-git-hooks`) to re-register hooks.
 
-## Editor Setup
+## Editor setup
 
-Install the **Oxc** VS Code extension (`oxc.oxc-vscode`). This workspace uses `.vscode/settings.json` with **oxfmt** as the default formatter. **oxfmt** picks up `oxfmt.config.ts` (or other supported config names) at the project root automatically — you usually do **not** need `oxc.fmt.configPath` unless the config lives elsewhere. If you set `oxc.fmt.configPath`, use a real path; **`${workspaceFolder}` is not expanded** when passed to the formatter binary.
-
-Minimal example:
+Install the **Oxc** VS Code extension (`oxc.oxc-vscode`). It provides both oxfmt formatting and oxlint diagnostics. Set oxfmt as the default formatter:
 
 ```json
 {
@@ -277,7 +369,14 @@ Minimal example:
 }
 ```
 
-See [oxc.rs formatter docs](https://oxc.rs/docs/guide/usage/formatter) and `.vscode/oxc.oxc-vscode.extension.md` for extension settings (oxlint, oxfmt paths, etc.).
+oxfmt picks up `oxfmt.config.ts` at the project root automatically. If you set `oxc.fmt.configPath`, use a real path — `${workspaceFolder}` is not expanded by the formatter binary.
+
+## Further reading
+
+- [docs/SETUP_OXFMT_CONFIG.md](./docs/SETUP_OXFMT_CONFIG.md) — formatter gotchas, workflow, config object reference
+- [docs/SETUP_OXLINT_CONFIG.md](./docs/SETUP_OXLINT_CONFIG.md) — linter composition patterns, full pieces reference
+- [docs/OXFMT_SORT_GROUPS.md](./docs/OXFMT_SORT_GROUPS.md) — sorting groups deep-dive
+- [docs/MIGRATION_GUIDE.md](./docs/MIGRATION_GUIDE.md) — migrating from v1.x, dprint, or Prettier
 
 ## License
 
