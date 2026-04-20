@@ -2,6 +2,7 @@ import type { DummyRuleMap } from 'oxlint';
 
 import { baseRules } from './base.rules';
 import { typescriptRules } from './typescript.rules';
+import { unicornRules } from './unicorn.rules';
 
 /**
  * Base Oxlint rule overrides shared by this config package.
@@ -20,4 +21,5 @@ import { typescriptRules } from './typescript.rules';
 export const rules = {
   ...baseRules,
   ...typescriptRules,
+  ...unicornRules,
 } as const satisfies DummyRuleMap;

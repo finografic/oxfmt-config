@@ -28,7 +28,7 @@
   "files": [
     "dist",
     "internal/schemas",
-    "MIGRATION_GUIDE.md"
+    "docs/MIGRATION_GUIDE.md"
   ],
   "type": "module",
   "main": "./dist/index.mjs",
@@ -49,6 +49,10 @@
     "link": "pnpm build && pnpm link --global",
     "unlink": "pnpm unlink --global",
     "build": "tsdown",
+    "·········· CONFIGS_AND_SCHEMAS": "·······································",
+    "schemas:update": "tsx ./scripts/update-schemas.ts",
+    "oxlint:config:capture": "tsx ./scripts/print-oxlint-config.ts",
+    "oxlint:config:capture:defaults": "tsx ./scripts/print-oxlint-config.ts --defaults",
     "·········· TESTING": "···················································",
     "test": "vitest",
     "test:run": "vitest run",
@@ -61,10 +65,6 @@
     "·········· FORMATTING": "················································",
     "format:check": "oxfmt -c oxfmt.config.ts --check",
     "format": "oxfmt -c oxfmt.config.ts",
-    "·········· CHECK / FIX": "···············································",
-    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:run",
-    "fix": "pnpm format && pnpm lint:fix",
-    "guard:clean": "git diff --exit-code && git diff --cached --exit-code",
     "·········· PUBLISH:GITHUB": "············································",
     "release:github:patch": "pnpm run release:check && pnpm version patch && git push --follow-tags",
     "release:github:minor": "pnpm run release:check && pnpm version minor && git push --follow-tags",
@@ -78,13 +78,14 @@
     "update:md-lint": "pnpm update @finografic/md-lint --latest",
     "upgrade:deps:all": "pnpm update --latest",
     "·········· UTILS": "·····················································",
-    "update:schema": "tsx ./scripts/update-schema.ts",
     "tsc:debug": "tsc --pretty --project tsconfig.json",
     "typecheck": "tsc --project tsconfig.json --noEmit",
     "prepack": "pnpm build",
     "prepare": "husky"
   },
   "dependencies": {
+    "execa": "^9.6.1",
+    "picocolors": "^1.1.1",
     "type-fest": "^5.6.0"
   },
   "devDependencies": {

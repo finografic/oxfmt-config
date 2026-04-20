@@ -19,5 +19,6 @@ import type { RuleCategories } from 'oxlint';
  */
 export const categories = {
   correctness: 'error',
+  suspicious: 'warn',
   perf: 'error',
 } as const satisfies RuleCategories;

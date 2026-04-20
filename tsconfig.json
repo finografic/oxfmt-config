@@ -19,14 +19,12 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "paths": {
       "oxfmt/*": ["./src/oxfmt/*"],
-      "oxlint/*": ["./src/oxlint/*"],
-      "patterns": ["./src/patterns/index.ts"],
-      "patterns/*": ["./src/patterns/*"]
+      "oxlint/*": ["./src/oxlint/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "./scripts/**/*"],
   "exclude": ["node_modules", "dist"]
 }
