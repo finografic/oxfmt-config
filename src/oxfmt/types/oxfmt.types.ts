@@ -5,13 +5,6 @@ import type {
 import type { OmitIndexSignature } from 'type-fest';
 
 /**
- * Removes string / number / symbol index signatures so only explicitly declared keys remain.
- *
- * Oxfmt’s `OxfmtConfig` ends with `[k: string]: unknown`, which allows any extra property. This mapped type
- * filters out those index keys (`string extends K`, etc.).
- */
-
-/**
  * Same as `OxfmtConfig` from `oxfmt`, but **without** `[k: string]: unknown`. Use this when you want
  * excess-property checking on config objects.
  *

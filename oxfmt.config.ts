@@ -1,5 +1,5 @@
 import { defineConfig } from 'oxfmt';
-import type { OxfmtConfig, OxfmtOverrideConfig } from './src/types/oxfmt.types';
+import type { OxfmtConfig, OxfmtOverrideConfig } from './src/oxfmt/types/oxfmt.types';
 
 import {
   agentMarkdown,

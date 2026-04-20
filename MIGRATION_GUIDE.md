@@ -1,8 +1,77 @@
 # Migration Guide
 
-How to migrate your `@finografic` (or any) project to `@finografic/oxfmt-config` from dprint or Prettier.
+---
 
-[@finografic/oxfmt-config](https://github.com/finografic/oxfmt-config)
+## v1.x → v2.0.0: Package rename to `@finografic/oxc-config`
+
+`@finografic/oxfmt-config` is now `@finografic/oxc-config`. The package now includes both oxfmt (formatter) and oxlint (linter) configuration in one install.
+
+### 1. Swap dependencies
+
+```bash
+# Remove old package
+pnpm remove @finografic/oxfmt-config
+
+# Add new package (includes both formatter and linter config)
+pnpm add -D @finografic/oxc-config
+```
+
+Add `oxlint` as a peer dep if not already installed:
+
+```bash
+pnpm add -D oxlint
+```
+
+### 2. Update import paths
+
+```diff
+- import { base, css, json, markdown, sorting, ignorePatterns } from '@finografic/oxfmt-config';
++ import { base, css, json, markdown, sorting, ignorePatterns } from '@finografic/oxc-config';
+```
+
+All existing export names (`base`, `css`, `json`, `markdown`, `sorting`, `typescript`, `ignorePatterns`, `SORTING_GROUP_*`, `SORT_PRESET_*`, `AGENT_DOC_PATHS`, `agentMarkdown`, …) are unchanged. No other changes needed to your `oxfmt.config.ts`.
+
+### 3. New exports (additive — no breaking changes)
+
+| Export               | Type             | Purpose                                               |
+| -------------------- | ---------------- | ----------------------------------------------------- |
+| `html`               | Preset           | HTML formatting options (previously unexported)       |
+| `react`              | Preset           | JSX/React formatting options (previously unexported)  |
+| `jsdoc`              | Preset           | JSDoc formatting block (already spread inside `base`) |
+| `lintPlugins`        | `string[]`       | Oxlint plugin list                                    |
+| `lintOptions`        | Config fragment  | `env` + `options` block for oxlint                    |
+| `lintCategories`     | Config fragment  | `{ correctness: 'error', perf: 'error' }`             |
+| `lintIgnorePatterns` | `string[]`       | Oxlint-specific ignore globs                          |
+| `baseRules`          | `DummyRuleMap`   | Core rule set for oxlint                              |
+| `testOverrides`      | `OxlintOverride` | Relaxed rules for test files                          |
+| `configOverrides`    | `OxlintOverride` | Allows default exports in config files                |
+
+### 4. Migrate your oxlint config to use shared pieces (optional)
+
+If you have an `oxlint.config.ts` in your project, you can now use the shared pieces:
+
+```ts
+import { defineConfig } from 'oxlint';
+import type { OxlintConfig } from 'oxlint';
+import {
+  baseRules,
+  configOverrides,
+  lintCategories,
+  lintIgnorePatterns,
+  lintOptions,
+  lintPlugins,
+  testOverrides,
+} from '@finografic/oxc-config';
+
+export default defineConfig({
+  plugins: [...lintPlugins],
+  ...lintOptions,
+  rules: { ...baseRules },
+  categories: { ...lintCategories },
+  overrides: [testOverrides, configOverrides],
+  ignorePatterns: [...lintIgnorePatterns],
+} satisfies OxlintConfig);
+```
 
 ---
 
@@ -15,7 +84,7 @@ How to migrate your `@finografic` (or any) project to `@finografic/oxfmt-config`
 pnpm remove dprint @finografic/dprint-config
 
 # Add oxfmt and the shared config
-pnpm add -D oxfmt @finografic/oxfmt-config@^1.0.0
+pnpm add -D oxfmt @finografic/oxc-config
 ```
 
 Delete the root `dprint.jsonc` (or `dprint.json`) config file.
@@ -35,7 +104,7 @@ import {
   json,
   markdown,
   sorting,
-} from '@finografic/oxfmt-config';
+} from '@finografic/oxc-config';
 
 export default defineConfig({
   $schema: './node_modules/oxfmt/configuration_schema.json',
@@ -61,11 +130,11 @@ export default defineConfig({
 
 ### 3. Update `package.json` scripts
 
-| Before (dprint)                  | After (oxfmt)                                                                                   |
-| -------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `"format:check": "dprint check"` | `"format:check": "oxfmt --check"`                                                               |
-| `"format": "dprint fmt --diff"`  | `"format": "oxfmt"`                                                                             |
-| `"update.dprint-config": "..."`  | Remove (or replace with `"update.oxfmt-config": "pnpm add -D @finografic/oxfmt-config@latest"`) |
+| Before (dprint)                  | After (oxfmt)                                                                                 |
+| -------------------------------- | --------------------------------------------------------------------------------------------- |
+| `"format:check": "dprint check"` | `"format:check": "oxfmt --check"`                                                             |
+| `"format": "dprint fmt --diff"`  | `"format": "oxfmt"`                                                                           |
+| `"update.dprint-config": "..."`  | Remove (or replace with `"update.oxfmt-config": "pnpm add -D @finografic/oxc-config@latest"`) |
 
 ### 4. Update lint-staged
 
@@ -93,13 +162,13 @@ If using `simple-git-hooks`, update the pre-commit command:
 }
 ```
 
-**🚨 CRITICAL:** After changing the hook config, re-register it:
+**CRITICAL:** After changing the hook config, re-register it:
 
 ```bash
 npx simple-git-hooks
 ```
 
-Without this step, `.git/hooks/pre-commit` still contains the old `dprint check` command. If dprint is installed globally (e.g. via Homebrew), the stale hook will appear to work but run the wrong formatter.
+Without this step, `.git/hooks/pre-commit` still contains the old `dprint check` command.
 
 ### 6. Update editor settings
 
@@ -113,38 +182,15 @@ In `.vscode/settings.json`:
 }
 ```
 
-In `.vscode/extensions.json`, add `oxc.oxc-vscode` to recommendations and move any dprint extension to `unwantedRecommendations`.
+### 7. Ensure `"type": "module"` is set
 
-### 7. Clean up
-
-```bash
-# Remove dprint from Homebrew if installed globally
-brew uninstall dprint
-
-# Remove from pnpm's onlyBuiltDependencies if listed
-# (edit package.json manually)
-
-# Add the reformatting commit SHA to .git-blame-ignore-revs
-echo "COMMIT_SHA # chore: migrate from dprint to oxfmt" >> .git-blame-ignore-revs
-```
-
-Update references to dprint in `CONTRIBUTING.md`, `AGENTS.md`, `CLAUDE.md`, and any other docs.
-
-### 8. Ensure `"type": "module"` is set
-
-Without `"type": "module"` in the workspace root `package.json`, Node logs a `MODULE_TYPELESS_PACKAGE_JSON` warning when loading `oxfmt.config.ts`. Add it if not already present:
-
-```json
-{
-  "type": "module"
-}
-```
+Without `"type": "module"` in the workspace root `package.json`, Node logs a `MODULE_TYPELESS_PACKAGE_JSON` warning when loading `oxfmt.config.ts`. Add it if not already present.
 
 ---
 
 ## Migrating from Prettier
 
-Oxfmt is Prettier-compatible and passes 100% of Prettier's JavaScript and TypeScript conformance tests. The official migration guide covers this thoroughly:
+Oxfmt is Prettier-compatible and passes 100% of Prettier's JavaScript and TypeScript conformance tests.
 
 **[oxc.rs/docs/guide/usage/formatter/migrate-from-prettier](https://oxc.rs/docs/guide/usage/formatter/migrate-from-prettier.html)**
 
@@ -154,76 +200,42 @@ For a quick migration in simple setups:
 pnpm add -D oxfmt@latest && pnpm oxfmt --migrate=prettier && pnpm oxfmt
 ```
 
-When migrating **to `@finografic/oxfmt-config`** specifically, replace your `.prettierrc` / `.prettierrc.json` / `prettier.config.js` with the `oxfmt.config.ts` shown in the dprint section above — the shared presets already encode the formatting preferences.
+When migrating **to `@finografic/oxc-config`** specifically, replace your `.prettierrc` with the `oxfmt.config.ts` shown in the dprint section above.
 
 ### Key differences from Prettier
 
-- Oxfmt's default `printWidth` is **100** (Prettier uses 80). The `@finografic/oxfmt-config` `base` preset sets it to **110**.
+- Oxfmt's default `printWidth` is **100** (Prettier uses 80). The `@finografic/oxc-config` `base` preset sets it to **110**.
 - Prettier plugins are not supported by oxfmt. Built-in equivalents exist for Tailwind CSS class sorting (`sortTailwindcss`) and import sorting (`sortImports`).
-- If continuing to use ESLint alongside oxfmt, keep `eslint-config-prettier` to disable ESLint styling rules that conflict. Remove `eslint-plugin-prettier` — it is no longer needed.
-
-### Additional cleanup for Prettier
-
-- Delete `.prettierrc`, `.prettierrc.json`, `.prettierrc.yaml`, `prettier.config.js`, or any Prettier config file.
-- Delete `.prettierignore` — move its contents into the `ignorePatterns` array in `oxfmt.config.ts` (or use the shared `ignorePatterns` from `@finografic/oxfmt-config`).
-- Uninstall `prettier`, `prettier-plugin-tailwindcss`, `eslint-plugin-prettier`, and any other Prettier-related packages.
+- If continuing to use ESLint alongside oxfmt, keep `eslint-config-prettier` to disable ESLint styling rules that conflict.
 
 ---
 
 ## Known gotchas
 
+### `$schema` silently resets formatting options
+
+`$schema` is a JSON meta-property for editor hints — it is **not** an oxfmt formatting option. If an object you spread into `defineConfig()` includes `$schema`, oxfmt may re-initialize from the schema file and reset all options to defaults.
+
+**Always set `$schema` directly on `defineConfig({...})`, never inside a preset object.**
+
 ### Import sorting conflicts
 
-If your project uses **ESLint `simple-import-sort`** (or any ESLint import ordering plugin) as the source of truth for import order, **do not enable** oxfmt's `sortImports`. The two tools may disagree on ordering, causing `pnpm lint` to report errors after formatting.
+If your project uses ESLint `simple-import-sort` as the source of truth for import order, **do not enable** oxfmt's `sortImports`. The two tools may disagree on ordering. Omit `...sorting` or configure only `sorting.rules` / `sorting.sortPackageJson`.
 
-In this case, omit `...sorting` from your config's `sortImports` (you can still spread `sorting.rules` and `sorting.sortPackageJson`), or simply don't spread `sorting` at all and configure only the parts you need.
-
-If oxfmt should be the sole owner of import sorting, use one of the `SORT_PRESET_*` exports and **remove** `eslint-plugin-simple-import-sort` from your ESLint config.
-
-### ESLint `@stylistic/indent` warnings after migration
-
-Oxfmt's JSX wrapping may produce indentation that differs from what `@stylistic/indent` expects. This typically shows up as warnings (not errors) in a small number of files. Fix with `pnpm lint:fix` or disable the rule if oxfmt is the formatting authority.
-
-### Lockfile regeneration
-
-The first `pnpm install` after swapping dependencies will fail under `--frozen-lockfile` (CI). Regenerate the lockfile locally and commit it with the migration:
-
-```bash
-pnpm install --no-frozen-lockfile
-```
-
-### Stale git hooks
-
-If pre-commit hooks still reference dprint after migration, the old command runs silently (especially if dprint is installed globally via Homebrew). Always run `npx simple-git-hooks` after changing hook config. See step 5 above.
-
-### Generated / machine-written files
-
-Files like generated icon registries or auto-generated barrel exports should be excluded from formatting. Add them to `ignorePatterns` in your `oxfmt.config.ts`. dprint's inline `// dprint-ignore-file` comments are not recognized by oxfmt.
-
----
-
-## Import sorting: breaking rename in v1.0.0
-
-If you previously used sorting group constants from `@finografic/oxfmt-config` pre-releases:
+### Breaking rename in v1.0.0 (pre-v2)
 
 ```diff
 - import { SORTING_GROUP_HOOKS_ROUTES } from '@finografic/oxfmt-config';
-+ import { SORTING_GROUP_HOOKS, SORTING_GROUP_CLIENT_ROUTES } from '@finografic/oxfmt-config';
-```
-
-And update `sortImports.groups` arrays:
-
-```diff
-- 'hooks-routes',
-+ 'hooks',
-+ 'client-routes',
++ import { SORTING_GROUP_HOOKS, SORTING_GROUP_CLIENT_ROUTES } from '@finografic/oxc-config';
 ```
 
 ---
 
 ## Further reading
 
-- [`@finografic/oxfmt-config` README](https://github.com/finografic/oxfmt-config/blob/master/README.md) — presets, sorting groups, `ignorePatterns`, agent doc paths
-- [oxfmt config reference](https://oxc.rs/docs/guide/usage/formatter/config-file-reference.html) — all available options
-- [Migrate from Prettier](https://oxc.rs/docs/guide/usage/formatter/migrate-from-prettier.html) — official oxfmt guide
-- [oxfmt quickstart](https://oxc.rs/docs/guide/usage/formatter/quickstart.html) — installation, editor setup, CI
+- [`@finografic/oxc-config` README](https://github.com/finografic/oxc-config/blob/master/README.md) — presets, sorting groups, linting pieces
+- [docs/SETUP_OXFMT_CONFIG.md](./docs/SETUP_OXFMT_CONFIG.md) — formatter config details and gotchas
+- [docs/SETUP_OXLINT_CONFIG.md](./docs/SETUP_OXLINT_CONFIG.md) — linter config details and composition patterns
+- [docs/OXFMT_SORT_GROUPS.md](./docs/OXFMT_SORT_GROUPS.md) — import sorting groups and presets
+- [oxfmt config reference](https://oxc.rs/docs/guide/usage/formatter/config-file-reference.html)
+- [oxlint rules reference](https://oxc.rs/docs/guide/usage/linter/rules.html)

@@ -1,22 +1,22 @@
-# 🛠️ @finografic/oxfmt-config
+# 🛠️ @finografic/oxc-config
 
-> Shareable oxfmt formatter configuration for the finografic ecosystem
+> Shareable oxfmt formatter and oxlint linter configuration for the finografic ecosystem
 
-Composable presets for [oxfmt](https://oxc.rs/docs/guide/usage/formatter) — the Rust-powered, Prettier-compatible formatter from the Oxc/VoidZero ecosystem.
+Composable presets for [oxfmt](https://oxc.rs/docs/guide/usage/formatter) and composable rules for [oxlint](https://oxc.rs/docs/guide/usage/linter) — both Rust-powered tools from the Oxc/VoidZero ecosystem.
 
 ## Installation
 
 ```bash
-pnpm add -D oxfmt @finografic/oxfmt-config
+pnpm add -D oxfmt oxlint @finografic/oxc-config
 ```
 
 ## Usage
 
-Create a `oxfmt.config.ts` in your project root:
+Create an `oxfmt.config.ts` in your project root:
 
 ```ts
 import { defineConfig } from 'oxfmt';
-import { base, css, json, markdown, sorting, ignorePatterns } from '@finografic/oxfmt-config';
+import { base, css, json, markdown, sorting, ignorePatterns } from '@finografic/oxc-config';
 
 export default defineConfig({
   $schema: './node_modules/oxfmt/configuration_schema.json',
@@ -48,7 +48,7 @@ export default defineConfig({
 
 Composable import-sort group constants. Import whichever groups match your project structure and use them in `sortImports.customGroups` and `sortImports.groups`.
 
-Source files: `src/config/sorting-groups/` (`base.groups.ts`, `client.groups.ts`, `server.groups.ts`, `react.groups.ts`, `presets.ts`).
+Source files: `src/oxfmt/sorting-groups/` (`base.groups.ts`, `client.groups.ts`, `server.groups.ts`, `react.groups.ts`, `presets.ts`).
 
 | Constant                         | Group name         | Matches                                                                       |
 | -------------------------------- | ------------------ | ----------------------------------------------------------------------------- |
@@ -67,7 +67,7 @@ Source files: `src/config/sorting-groups/` (`base.groups.ts`, `client.groups.ts`
 
 ### Presets
 
-Ready-made `customGroups` arrays live in `src/config/sorting-groups/presets.ts`:
+Ready-made `customGroups` arrays live in `src/oxfmt/sorting-groups/presets.ts`:
 
 | Export                | Typical use        |
 | --------------------- | ------------------ |
@@ -80,7 +80,7 @@ Spread them into `sortImports.customGroups` and mirror the same group names in `
 
 ### Agent instruction paths
 
-`AGENT_DOC_PATHS`, `AGENT_DOC_MARKDOWN_PATHS`, and `agentMarkdown` are defined in `src/config/patterns/agent-docs.patterns.ts` for relaxed markdown formatting on AI instruction files (Copilot, Cursor, `AGENTS.md`, etc.). The root `oxfmt.config.ts` in this repo shows how to combine them with `overrides`.
+`AGENT_DOC_PATHS`, `AGENT_DOC_MARKDOWN_PATHS`, and `agentMarkdown` are defined in `src/patterns/agent-docs.patterns.ts` for relaxed markdown formatting on AI instruction files (Copilot, Cursor, `AGENTS.md`, etc.). The root `oxfmt.config.ts` in this repo shows how to combine them with `overrides`.
 
 When spreading `...sorting` and overriding `sortImports`, the explicit key wins — `sorting.rules` and `sorting.sortPackageJson` are still inherited from the spread.
 
@@ -89,8 +89,8 @@ When spreading `...sorting` and overriding `sortImports`, the explicit key wins 
 If you previously used `SORTING_GROUP_HOOKS_ROUTES` / `'hooks-routes'`, split into hooks and client routes:
 
 ```diff
-- import { SORTING_GROUP_HOOKS_ROUTES } from '@finografic/oxfmt-config';
-+ import { SORTING_GROUP_HOOKS, SORTING_GROUP_CLIENT_ROUTES } from '@finografic/oxfmt-config';
+- import { SORTING_GROUP_HOOKS_ROUTES } from '@finografic/oxc-config';
++ import { SORTING_GROUP_HOOKS, SORTING_GROUP_CLIENT_ROUTES } from '@finografic/oxc-config';
 ```
 
 ```diff
@@ -126,7 +126,7 @@ import {
   SORTING_GROUP_TYPES_CONSTANTS,
   SORTING_GROUP_STYLES,
   SORTING_GROUP_TESTS,
-} from '@finografic/oxfmt-config';
+} from '@finografic/oxc-config';
 
 export default defineConfig({
   $schema: './node_modules/oxfmt/configuration_schema.json',
@@ -192,7 +192,7 @@ import {
   SORTING_GROUP_LIB_UTILS,
   SORTING_GROUP_TYPES_CONSTANTS,
   SORTING_GROUP_TESTS,
-} from '@finografic/oxfmt-config';
+} from '@finografic/oxc-config';
 
 export default defineConfig({
   $schema: './node_modules/oxfmt/configuration_schema.json',
@@ -236,14 +236,16 @@ export default defineConfig({
 
 ## Source layout (this repo)
 
-| Area                           | Path                                                                                     |
-| ------------------------------ | ---------------------------------------------------------------------------------------- |
-| Formatting presets             | `src/config/formatting/` (`base`, `typescript`, `json`, `markdown`, `css`, `sorting`, …) |
-| Ignore globs + agent doc paths | `src/config/patterns/` (`ignore.patterns.ts`, `agent-docs.patterns.ts`, `index.ts`)      |
-| Import-sort groups + presets   | `src/config/sorting-groups/` (`*.groups.ts`, `presets.ts`)                               |
-| Public API                     | `src/index.ts` → `dist/index.mjs`                                                        |
+| Area                           | Path                                                                                                     |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| Formatting presets             | `src/oxfmt/formatting/` (`base`, `typescript`, `json`, `markdown`, `css`, `sorting`, `html`, `react`, …) |
+| Sorting groups + presets       | `src/oxfmt/sorting-groups/` (`*.groups.ts`, `presets.ts`)                                                |
+| Types                          | `src/oxfmt/types/` (`oxfmt.types.ts`, `sorting.types.ts`)                                                |
+| Linting pieces                 | `src/oxlint/` (`plugins.ts`, `categories.ts`, `options.ts`, `ignore.patterns.ts`, `rules/`)              |
+| Ignore globs + agent doc paths | `src/patterns/` (`ignore.patterns.ts`, `agent-docs.patterns.ts`)                                         |
+| Public API                     | `src/index.ts` → `dist/index.mjs`                                                                        |
 
-The root `oxfmt.config.ts` imports from `./dist/index.mjs` (not `src/`) so the formatter always sees the built bundle; rebuild with `pnpm build` after editing `src/`.
+Both `oxfmt.config.ts` and `oxlint.config.ts` import from `./dist/index.mjs` (not `src/`) so the tools always see the built bundle; rebuild with `pnpm build` after editing `src/`.
 
 ## lint-staged
 
