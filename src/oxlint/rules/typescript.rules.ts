@@ -29,7 +29,12 @@ export const typescriptRules: DummyRuleMap = {
   'typescript/explicit-function-return-type': [
     'warn',
     {
+      allowConciseArrowFunctionExpressionsStartingWithVoid: true,
+      allowDirectConstAssertionInArrowFunctions: true,
       allowExpressions: true,
+      allowFunctionsWithoutTypeParameters: true,
+      allowHigherOrderFunctions: true,
+      allowIIFEs: true,
       allowTypedFunctionExpressions: true,
     },
   ],

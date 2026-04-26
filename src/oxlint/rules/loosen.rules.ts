@@ -13,19 +13,6 @@ export const loosenRules: DummyRuleMap = {
   'react-perf/jsx-no-new-function-as-prop': 'off',
   'react-perf/jsx-no-new-object-as-prop': 'off',
 
-  'typescript/explicit-function-return-type': [
-    'warn',
-    {
-      allowConciseArrowFunctionExpressionsStartingWithVoid: true,
-      allowDirectConstAssertionInArrowFunctions: true,
-      allowExpressions: true,
-      allowFunctionsWithoutTypeParameters: true,
-      allowHigherOrderFunctions: true,
-      allowIIFEs: true,
-      allowTypedFunctionExpressions: true,
-    },
-  ],
-
   'jsdoc/check-tag-names': [
     'warn',
     {
