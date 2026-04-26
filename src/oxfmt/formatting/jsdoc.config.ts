@@ -82,7 +82,7 @@ export const jsdoc = {
      * @default 'greedy'
      * @type {'greedy' | 'balance'}
      */
-    lineWrappingStyle: 'greedy',
+    lineWrappingStyle: 'balance',
 
     /**
      * Use fenced code blocks instead of 4-space indentation for code without a language tag.
