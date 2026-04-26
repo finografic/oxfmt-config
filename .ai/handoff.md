@@ -8,7 +8,8 @@
 
 ## Project
 
-`@finografic/oxc-config` — Shareable oxfmt formatter presets and oxlint linter rules for the finografic ecosystem. Published to GitHub Packages. Version: 2.0.0 (breaking rename from `@finografic/oxfmt-config`). Branch `feat/oxc-config-rename` ready for PR → master.
+`@finografic/oxc-config` — Shareable oxfmt formatter presets and oxlint linter rules for the finografic ecosystem.
+Published to GitHub Packages. On `master`. Next publish: bump version and release.
 
 ## Architecture
 
@@ -34,7 +35,8 @@ src/
     ignore.patterns.ts           ← ignorePatterns (oxlint)
     rules/                       ← baseRules, typescriptRules, composed rules, loosenRules
     overrides/                   ← testOverrides, configOverrides
-    default.config.ts            ← oxlintConfig object
+    presets/                     ← oxlintClientConfig, oxlintServerConfig, oxlintCliConfig, oxlintLibraryConfig
+    default.config.ts            ← oxlintConfig object (composes from oxlintLibraryConfig)
     index.ts                     ← granular oxlint public API
 dist/                            ← compiled output (gitignored)
 ```
@@ -98,4 +100,6 @@ pnpm release:github:patch/minor/major
 
 ## Status
 
-v2.0.0 complete on `feat/oxc-config-rename` (3 commits). `pnpm check` passes clean. README has full oxfmt + oxlint sections; all examples use `satisfies OxfmtConfig` / `satisfies OxfmtOverrideConfig[]` and include the two-path markdown override pattern. `OxfmtConfig` type includes `$schema?: string`. Next: PR → master, version tag `2.0.0`, publish to GitHub Packages.
+On `master`. All checks pass. README has full oxfmt + oxlint sections including the new "Linter presets"
+section with the four presets (`oxlintClientConfig`, `oxlintServerConfig`, `oxlintCliConfig`,
+`oxlintLibraryConfig`). Next: bump version and publish to GitHub Packages.

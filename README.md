@@ -289,6 +289,59 @@ export default defineConfig({
 } satisfies OxlintConfig);
 ```
 
+### Linter presets
+
+Presets are ready-to-spread `OxlintConfig` objects that bundle the right `env`, `plugins`,
+`categories`, `rules`, and `ignorePatterns` for a given codebase type. Use a preset instead
+of assembling the pieces manually when your project fits one of the four scenarios below.
+Add your own `overrides` on top.
+
+| Preset                | Use when…                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------ |
+| `oxlintClientConfig`  | React / Vite SPA — browser globals, `react` + `react-perf` plugins, perf warnings on |
+| `oxlintServerConfig`  | Hono / Express / Node API — node globals, no React plugins                           |
+| `oxlintCliConfig`     | Node CLI tools and scripts — identical to server; `no-console` is already `off`      |
+| `oxlintLibraryConfig` | Config-only or utility libraries — correctness only, no `perf` or `suspicious`       |
+
+**Key differences at a glance:**
+
+|                 | `env`     | `react` plugin | `perf` category | `suspicious` category |
+| --------------- | --------- | -------------- | --------------- | --------------------- |
+| `oxlintClient`  | `browser` | ✓              | `warn`          | `warn`                |
+| `oxlintServer`  | `node`    | —              | —               | `warn`                |
+| `oxlintCli`     | `node`    | —              | —               | `warn`                |
+| `oxlintLibrary` | `node`    | —              | —               | —                     |
+
+**Usage** — spread the preset, then add your overrides:
+
+```ts
+// oxlint.config.ts (server / Hono example)
+import { oxlintServerConfig, testOverrides, configOverrides } from '@finografic/oxc-config/oxlint';
+import { defineConfig } from 'oxlint';
+import type { OxlintConfig } from 'oxlint';
+
+export default defineConfig({
+  ...oxlintServerConfig,
+  overrides: [testOverrides, configOverrides],
+} satisfies OxlintConfig);
+```
+
+```ts
+// oxlint.config.ts (React / Vite example)
+import { oxlintClientConfig, testOverrides, configOverrides } from '@finografic/oxc-config/oxlint';
+import { defineConfig } from 'oxlint';
+import type { OxlintConfig } from 'oxlint';
+
+export default defineConfig({
+  ...oxlintClientConfig,
+  overrides: [testOverrides, configOverrides],
+} satisfies OxlintConfig);
+```
+
+All four presets are exported from `@finografic/oxc-config/oxlint`. The composable pieces (`rules`, `plugins`, `env`, …) remain individually exported if you need to deviate further.
+
+---
+
 ### Exported pieces (`@finografic/oxc-config/oxlint`)
 
 | Export            | Type             | Purpose                                                             |

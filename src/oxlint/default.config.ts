@@ -1,23 +1,9 @@
 import type { OxlintConfig } from 'oxlint';
 
-import {
-  categories,
-  configOverrides,
-  env,
-  ignorePatterns,
-  loosenRules,
-  options,
-  plugins,
-  rules,
-  testOverrides,
-} from './index';
+import { configOverrides, testOverrides } from './index';
+import { oxlintLibraryConfig } from './presets/library.preset';
 
 export const oxlintConfig = {
-  plugins: [...plugins],
-  env,
-  options,
-  categories,
-  rules: { ...rules, ...loosenRules },
+  ...oxlintLibraryConfig,
   overrides: [testOverrides, configOverrides],
-  ignorePatterns: [...ignorePatterns],
 } satisfies OxlintConfig;

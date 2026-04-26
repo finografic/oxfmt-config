@@ -22,3 +22,11 @@ export { testOverrides } from './overrides/test.overrides';
 
 // ── oxlint: ignore patterns ───────────────────────
 export { IGNORE_PATTERNS_LINT as ignorePatterns } from './ignore.patterns';
+
+// ── oxlint: presets ───────────────────────────────
+export {
+  oxlintClientConfig,
+  oxlintCliConfig,
+  oxlintLibraryConfig,
+  oxlintServerConfig,
+} from './presets/index';
